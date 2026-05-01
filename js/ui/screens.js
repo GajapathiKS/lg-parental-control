@@ -511,6 +511,10 @@ var Screens = (function () {
     if (!profile) { App.navigate('parent-dashboard'); return; }
 
     var rules = profile.rules || [];
+    var codeProgress = Pin.getProfileCodeProgress(profileId);
+    var codeStatus = codeProgress
+      ? 'Next code: ' + String(codeProgress.next).padStart(2, '0') + ' of ' + codeProgress.total
+      : (profile.launchCodeHash ? 'Single code configured' : 'Not set');
     var html = '<div class="screen parent-control-screen">' +
       '<div class="row">' +
         '<div><div class="mission-kicker red">Child mission control</div><div class="title">' + _escapeHtml(profile.name) + '</div></div>' +
@@ -527,10 +531,10 @@ var Screens = (function () {
           '</div>' +
         '</div>' +
         '<div class="card control-card">' +
-          '<div class="label">Kid launch code</div>' +
-          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Share one separate 6-digit code with this child.</div>' +
-          '<div id="profile-code-output" class="control-code">' + (profile.launchCodeHash ? 'Configured' : 'Not set') + '</div>' +
-          '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Generate New Code</button>' +
+          '<div class="label">Kid launch passwords</div>' +
+          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Generate 30 ordered passwords for this child. Only the next password works.</div>' +
+          '<div id="profile-code-output" class="control-code">' + codeStatus + '</div>' +
+          '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Generate 30 Passwords</button>' +
         '</div>' +
         '<div class="card control-card wide">' +
           '<div class="label">Blocked time rule</div>' +
@@ -559,9 +563,8 @@ var Screens = (function () {
     document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
     document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
     document.getElementById('btn-profile-code').addEventListener('click', async function () {
-      var code = Pin.generateShareableCode();
-      await Pin.setProfileCode(profileId, code);
-      document.getElementById('profile-code-output').textContent = code;
+      var codes = await Pin.generateProfileCodeSet(profileId, 30);
+      showProfileCodeSet(profileId, profile.name, codes);
     });
     document.getElementById('btn-add-rule').addEventListener('click', function () {
       var name = document.getElementById('rule-name').value.trim() || 'Blocked window';
@@ -576,6 +579,32 @@ var Screens = (function () {
       });
     });
     Navigation.onBack(function () { App.navigate('parent-dashboard'); });
+  }
+
+  function showProfileCodeSet(profileId, profileName, codes) {
+    var overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('hidden');
+    overlay.innerHTML =
+      '<div class="modal" style="min-width: 820px;">' +
+        '<div class="mission-kicker red">Launch passwords</div>' +
+        '<div class="title">' + _escapeHtml(profileName) + '</div>' +
+        '<div class="subtitle">Give these to this child separately. They must be used in order; after 30, the cycle starts again at 1.</div>' +
+        '<textarea readonly class="focusable" tabindex="0" style="width: 100%; height: 310px; resize: none; font-size: 28px; line-height: 1.5; padding: 20px; color: var(--text-primary); background: var(--bg-primary); border: 2px solid var(--border); border-radius: var(--radius);">' +
+          codes.map(function (code, index) {
+            return String(index + 1).padStart(2, '0') + '. ' + code;
+          }).join('\\n') +
+        '</textarea>' +
+        '<div class="row" style="justify-content: flex-end; margin-top: 24px;">' +
+          '<button class="btn btn-primary focusable" tabindex="0" id="btn-close-profile-codes">Done</button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('btn-close-profile-codes').addEventListener('click', function () {
+      overlay.classList.add('hidden');
+      overlay.innerHTML = '';
+      App.navigate('profile-controls', { profileId: profileId });
+    });
+    Navigation.focusFirst(overlay);
   }
 
   function _updateProfileLimit(profileId, delta) {

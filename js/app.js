@@ -20,13 +20,9 @@ var App = (function () {
     // Purge old usage logs on startup
     Storage.purgeOldLogs();
 
-    // Resume active session if app was relaunched
-    var activeSession = Storage.getActiveSession();
-    if (activeSession) {
-      console.info('[App] Resuming active session for', activeSession.profileId);
-      navigate('child-dashboard', { profileId: activeSession.profileId });
-      return;
-    }
+    // Always require profile selection on TV launch. This prevents a previous
+    // session from bypassing the child/profile choice screen.
+    Storage.clearActiveSession();
 
     // Route to appropriate first screen
     if (!Storage.isSetupComplete()) {

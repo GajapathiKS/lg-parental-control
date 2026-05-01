@@ -105,6 +105,17 @@ var TestPin = (function () {
     var childCodeWrong = await Pin.verifyProfileCode(profile.id, '111111');
     assert(childCodeWrong === false, 'Wrong per-profile child launch code rejected');
 
+    var profileCodes = await Pin.generateProfileCodeSet(profile.id, 30);
+    assert(profileCodes.length === 30, 'Generates 30 per-profile launch passwords');
+    var progress = Pin.getProfileCodeProgress(profile.id);
+    assert(progress.next === 1 && progress.remaining === 30, 'Per-profile launch passwords start at code 1');
+    var profileSecondEarly = await Pin.verifyProfileCode(profile.id, profileCodes[1]);
+    assert(profileSecondEarly === false, 'Per-profile launch password cannot be used early');
+    var profileFirstWorks = await Pin.verifyProfileCode(profile.id, profileCodes[0]);
+    assert(profileFirstWorks === true, 'Per-profile launch password works in order');
+    progress = Pin.getProfileCodeProgress(profile.id);
+    assert(progress.next === 2 && progress.remaining === 29, 'Per-profile launch password advances after use');
+
     // --- Cleanup ---
     Storage.resetAll();
 
