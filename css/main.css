@@ -382,6 +382,50 @@ body {
     url("../assets/space/earth-hero.png") center / cover no-repeat;
 }
 
+.setup-screen,
+.parent-pin-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.92), rgba(1, 2, 7, 0.48)),
+    url("../assets/space/nebula-bg.png") center / cover no-repeat;
+}
+
+.create-profile-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96), rgba(1, 2, 7, 0.2)),
+    url("../assets/space/orbit-station-bg.png") center / cover no-repeat;
+}
+
+.mission-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96), rgba(1, 2, 7, 0.38)),
+    url("../assets/space/solar-system-bg.png") center / cover no-repeat;
+}
+
+.child-screen,
+.code-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.92), rgba(1, 2, 7, 0.42)),
+    url("../assets/space/spacewalk-bg.png") center / cover no-repeat;
+}
+
+.parent-dashboard-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96), rgba(1, 2, 7, 0.34)),
+    url("../assets/space/moon-bg.png") center / cover no-repeat;
+}
+
+.parent-control-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96), rgba(1, 2, 7, 0.34)),
+    url("../assets/space/mars-bg.png") center / cover no-repeat;
+}
+
+.settings-screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96), rgba(1, 2, 7, 0.34)),
+    url("../assets/space/nebula-bg.png") center / cover no-repeat;
+}
+
 .top-nav {
   display: flex;
   align-items: center;

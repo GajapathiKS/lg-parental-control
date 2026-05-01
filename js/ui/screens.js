@@ -47,7 +47,7 @@ var Screens = (function () {
     var pinDigits = [];
 
     _render(
-      '<div class="screen center">' +
+      '<div class="screen setup-screen center">' +
         '<div class="col" style="align-items: center;">' +
           '<div class="title">' + title + '</div>' +
           '<div class="subtitle" style="text-align: center;">' + subtitle + '</div>' +
@@ -86,7 +86,7 @@ var Screens = (function () {
     var pinDigits = [];
 
     _render(
-      '<div class="screen center">' +
+      '<div class="screen setup-screen center">' +
         '<div class="col" style="align-items: center;">' +
           '<div class="title">Confirm Your PIN</div>' +
           '<div class="subtitle">Enter the same PIN again</div>' +
@@ -136,7 +136,7 @@ var Screens = (function () {
     var childPassword = '';
 
     _render(
-      '<div class="screen">' +
+      '<div class="screen create-profile-screen">' +
         '<div class="title">Create a Child Profile</div>' +
         '<div class="subtitle">Who will be using this TV?</div>' +
         '<div class="row" style="gap: 48px; margin-top: 24px;">' +
@@ -281,7 +281,7 @@ var Screens = (function () {
     var blocked = status.blockingRule;
 
     _render(
-      '<div class="screen">' +
+      '<div class="screen child-screen">' +
         '<div class="row">' +
           '<div style="font-size: 64px;">' + Components.getAvatarEmoji(profile.avatar) + '</div>' +
           '<div class="col" style="gap: 4px;">' +
@@ -375,7 +375,7 @@ var Screens = (function () {
     if (!profile) { App.navigate('profile-select'); return; }
 
     _render(
-      '<div class="screen center">' +
+      '<div class="screen code-screen center">' +
         '<div class="col" style="align-items: center;">' +
           '<div class="mission-kicker red">Launch code</div>' +
           '<div class="title">Enter ' + _escapeHtml(profile.name) + '\'s Code</div>' +
@@ -420,7 +420,7 @@ var Screens = (function () {
     var pinDigits = [];
 
     _render(
-      '<div class="screen center">' +
+      '<div class="screen parent-pin-screen center">' +
         '<div class="col" style="align-items: center;">' +
           '<div style="font-size: 64px;">🔒</div>' +
           '<div class="title">Enter Parent PIN</div>' +
@@ -466,7 +466,7 @@ var Screens = (function () {
 
   function showParentDashboard() {
     var profiles = Storage.getProfiles();
-    var html = '<div class="screen">' +
+    var html = '<div class="screen parent-dashboard-screen">' +
       '<div class="row">' +
         '<div class="title">Parent Dashboard</div>' +
         '<div class="spacer"></div>' +
@@ -652,7 +652,7 @@ var Screens = (function () {
     var unusedCodes = Storage.getUnusedOneTimeCodeCount();
 
     _render(
-      '<div class="screen">' +
+      '<div class="screen settings-screen">' +
         '<div class="row">' +
           '<div class="title">Settings</div>' +
           '<div class="spacer"></div>' +
