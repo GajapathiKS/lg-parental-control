@@ -124,7 +124,6 @@ var Screensaver = (function () {
   function _renderMiniClock() {
     return '<div class="screensaver-mini-clock">' +
       '<div id="space-clock-time" class="mini-clock-time">--:--</div>' +
-      '<div id="space-clock-date" class="mini-clock-date">Preparing orbit</div>' +
       '</div>';
   }
 
@@ -136,10 +135,7 @@ var Screensaver = (function () {
       '<div class="station-spoke spoke-a"></div>' +
       '<div class="station-spoke spoke-b"></div>' +
       '<div class="station-core">' +
-        '<div class="space-clock-kicker">Earth local time</div>' +
         '<div id="space-clock-time" class="space-clock-time">--:--</div>' +
-        '<div id="space-clock-date" class="space-clock-date">Preparing orbit</div>' +
-        '<div class="space-clock-next">Next launch window: tomorrow</div>' +
       '</div>' +
       '</div>';
   }
@@ -161,18 +157,20 @@ var Screensaver = (function () {
   function _updateClock() {
     var timeEl = document.getElementById('space-clock-time');
     var dateEl = document.getElementById('space-clock-date');
-    if (!timeEl || !dateEl) return;
+    if (!timeEl) return;
 
     var now = new Date();
     timeEl.textContent = now.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
     });
-    dateEl.textContent = now.toLocaleDateString([], {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-    });
+    if (dateEl) {
+      dateEl.textContent = now.toLocaleDateString([], {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+      });
+    }
   }
 
   function _escapeAttr(value) {

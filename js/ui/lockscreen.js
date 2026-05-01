@@ -35,16 +35,7 @@ var Lockscreen = (function () {
     _overlay.innerHTML =
       '<div class="lockscreen-immersive">' +
         '<div id="screensaver-stage" class="screensaver-stage"></div>' +
-        '<div class="lockscreen-panel">' +
-          '<div class="mission-kicker">Mission pause</div>' +
-          '<div class="title" style="color: var(--danger);">Time\'s Up</div>' +
-          '<div class="subtitle">' + _escapeHtml(profileName) + ', your screen time mission is complete for today.</div>' +
-          '<div class="lockscreen-readout">' +
-            '<span>Next launch window</span>' +
-            '<strong>Tomorrow</strong>' +
-          '</div>' +
-          '<button class="btn focusable" tabindex="0" id="btn-unlock">Unlock with Parent PIN</button>' +
-        '</div>' +
+        '<button class="screensaver-parent-button focusable" tabindex="0" id="btn-unlock">Parent</button>' +
       '</div>';
 
     Screensaver.start(document.getElementById('screensaver-stage'));

@@ -492,15 +492,39 @@ body {
 
 .screensaver-mini-clock {
   position: absolute;
-  right: 58px;
+  right: 232px;
   bottom: 46px;
-  min-width: 260px;
+  min-width: 210px;
   padding: 20px 24px;
   text-align: right;
   color: var(--text-primary);
   background: linear-gradient(90deg, rgba(1, 2, 7, 0.1), rgba(1, 2, 7, 0.72));
   border-right: 3px solid var(--accent);
   text-shadow: 0 3px 16px rgba(0, 0, 0, 0.8);
+}
+
+.screensaver-parent-button {
+  position: absolute;
+  right: 58px;
+  bottom: 50px;
+  z-index: 6;
+  min-width: 142px;
+  height: 82px;
+  padding: 0 28px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(1, 2, 7, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: var(--radius);
+  font-size: 24px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.screensaver-parent-button:focus {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(100, 230, 255, 0.65);
 }
 
 .mini-clock-time {
@@ -603,7 +627,7 @@ body {
 
 .space-clock-time {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 86px;
+  font-size: 108px;
 }
 
 .mission-kicker {
