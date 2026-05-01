@@ -22,8 +22,14 @@
   box-shadow: 0 0 0 4px rgba(100, 230, 255, 0.18);
 }
 
-.btn-primary { background: var(--accent); color: #000; }
-.btn-primary:focus { background: var(--accent-hover); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:focus { background: var(--accent-hover); color: #fff; }
+
+.btn-ghost {
+  background: rgba(1, 2, 7, 0.44);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--text-primary);
+}
 
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-danger:focus { background: #f44336; }

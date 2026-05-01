@@ -97,13 +97,28 @@ var Screensaver = (function () {
   }
 
   function _renderClock() {
-    return '<div class="space-clock">' +
-      '<div class="space-clock-orbit"><div class="space-clock-dot"></div></div>' +
-      '<div class="space-clock-kicker">Earth local time</div>' +
-      '<div id="space-clock-time" class="space-clock-time">--:--</div>' +
-      '<div id="space-clock-date" class="space-clock-date">Preparing orbit</div>' +
-      '<div class="space-clock-next">Next launch window: tomorrow</div>' +
+    return '<div class="space-wheel-clock">' +
+      '<div class="wheel-rim">' + _renderTicks(72) + '</div>' +
+      '<div class="wheel-ring ring-one"></div>' +
+      '<div class="wheel-ring ring-two"></div>' +
+      '<div class="station-spoke spoke-a"></div>' +
+      '<div class="station-spoke spoke-b"></div>' +
+      '<div class="station-core">' +
+        '<div class="space-clock-kicker">Earth local time</div>' +
+        '<div id="space-clock-time" class="space-clock-time">--:--</div>' +
+        '<div id="space-clock-date" class="space-clock-date">Preparing orbit</div>' +
+        '<div class="space-clock-next">Next launch window: tomorrow</div>' +
+      '</div>' +
       '</div>';
+  }
+
+  function _renderTicks(count) {
+    var html = '';
+    for (var i = 0; i < count; i++) {
+      var major = i % 6 === 0 ? ' major' : '';
+      html += '<span class="wheel-tick' + major + '" style="transform: rotate(' + (i * (360 / count)) + 'deg);"></span>';
+    }
+    return html;
   }
 
   function _startClock() {

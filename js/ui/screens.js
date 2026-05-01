@@ -17,17 +17,27 @@ var Screens = (function () {
 
   function showWelcome() {
     _render(
-      '<div class="screen center">' +
-        '<div class="col" style="align-items: center; gap: 32px;">' +
-          '<div style="font-size: 80px;">🛡️</div>' +
-          '<div class="title" style="text-align: center;">Parental Control</div>' +
-          '<div class="subtitle" style="text-align: center;">Monitor and limit screen time for your kids</div>' +
-          '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-setup">Get Started</button>' +
+      '<div class="screen landing-screen">' +
+        '<div class="top-nav">' +
+          '<div class="brand-mark">ORBIT</div>' +
+          '<div class="nav-links"><span>Missions</span><span>Profiles</span><span>Limits</span><span>Logs</span></div>' +
+        '</div>' +
+        '<div class="hero-copy">' +
+          '<div class="mission-kicker red">Family mission control</div>' +
+          '<div class="hero-title">Explore the<br>next horizon</div>' +
+          '<div class="hero-subtitle">A cinematic control deck for screen time, launch windows, and calm TV downtime.</div>' +
+          '<div class="row" style="margin-top: 34px;">' +
+            '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-setup">Launch Setup</button>' +
+            '<button class="btn btn-ghost btn-large focusable" tabindex="0" id="btn-preview-lock">Preview Clock</button>' +
+          '</div>' +
         '</div>' +
       '</div>'
     );
     document.getElementById('btn-start-setup').addEventListener('click', function () {
       App.navigate('setup-pin');
+    });
+    document.getElementById('btn-preview-lock').addEventListener('click', function () {
+      Lockscreen.showLockscreen('Preview');
     });
   }
 
@@ -197,10 +207,14 @@ var Screens = (function () {
 
   function showProfileSelect() {
     var profiles = Storage.getProfiles();
-    var html = '<div class="screen">' +
-      '<div class="title">Who\'s Watching?</div>' +
-      '<div class="subtitle">Select a profile</div>' +
-      '<div class="row" style="gap: 32px; margin-top: 40px; flex-wrap: wrap;">';
+    var html = '<div class="screen mission-screen">' +
+      '<div class="top-nav">' +
+        '<div class="brand-mark">ORBIT</div>' +
+        '<div class="nav-links"><span>Mission crew</span><span>Daily windows</span><span>Parent deck</span></div>' +
+      '</div>' +
+      '<div class="mission-kicker red">Select active mission</div>' +
+      '<div class="hero-title compact">Who is<br>watching?</div>' +
+      '<div class="row profile-row">';
 
     profiles.forEach(function (p) {
       html += Components.renderProfileCard(p);
@@ -213,9 +227,9 @@ var Screens = (function () {
       '</div>';
 
     html += '</div>' +
-      '<div class="row" style="margin-top: auto;">' +
+      '<div class="row mission-actions">' +
         '<div class="spacer"></div>' +
-        '<button class="btn focusable" tabindex="0" id="btn-parent-access">🔒 Parent Settings</button>' +
+        '<button class="btn focusable" tabindex="0" id="btn-parent-access">Parent Settings</button>' +
       '</div>' +
       '</div>';
 

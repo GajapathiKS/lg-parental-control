@@ -362,3 +362,240 @@ body {
 .avatar-option:focus {
   border-color: var(--accent);
 }
+
+/* Cinematic mission UI v2 */
+:root {
+  --bg-primary: #010207;
+  --bg-secondary: #07090f;
+  --bg-card: #0d1018;
+  --text-primary: #fbf7ef;
+  --text-secondary: #b8bdc9;
+  --text-muted: #747b8a;
+  --accent: #e50922;
+  --accent-hover: #ff293d;
+  --border: #252936;
+}
+
+.screen {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.96) 0%, rgba(1, 2, 7, 0.78) 42%, rgba(1, 2, 7, 0.14) 100%),
+    url("../assets/space/earth-hero.png") center / cover no-repeat;
+}
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 74px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-mark {
+  color: var(--accent);
+  font-size: 46px;
+  font-weight: 900;
+}
+
+.nav-links {
+  display: flex;
+  gap: 70px;
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.landing-screen,
+.mission-screen {
+  overflow: hidden;
+}
+
+.hero-copy {
+  width: 760px;
+  margin-top: 150px;
+}
+
+.hero-title {
+  color: var(--text-primary);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 118px;
+  line-height: 0.86;
+  font-weight: 700;
+  text-shadow: 0 14px 42px rgba(0, 0, 0, 0.5);
+}
+
+.hero-title.compact {
+  margin-top: 20px;
+  font-size: 92px;
+}
+
+.hero-subtitle {
+  width: 520px;
+  margin-top: 28px;
+  color: var(--text-secondary);
+  font-size: 27px;
+  line-height: 1.45;
+}
+
+.profile-row {
+  gap: 32px;
+  margin-top: 48px;
+  flex-wrap: wrap;
+}
+
+.mission-actions {
+  margin-top: auto;
+}
+
+.card,
+.modal {
+  background: rgba(6, 8, 13, 0.86);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.86);
+}
+
+.screensaver-fallback {
+  background:
+    linear-gradient(90deg, rgba(1, 2, 7, 0.9) 0%, rgba(1, 2, 7, 0.34) 100%),
+    url("../assets/space/earth-hero.png") center / cover no-repeat;
+}
+
+.fallback-planet,
+.orbit {
+  display: none;
+}
+
+.lockscreen-panel {
+  left: 80px;
+  top: 102px;
+  bottom: auto;
+  width: 610px;
+  background: rgba(3, 4, 9, 0.62);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+.space-clock {
+  display: none;
+}
+
+.space-wheel-clock {
+  position: absolute;
+  right: 64px;
+  top: 118px;
+  width: 780px;
+  height: 780px;
+  color: var(--text-primary);
+}
+
+.wheel-rim,
+.wheel-ring,
+.station-core,
+.station-spoke {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.wheel-rim {
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.04), 0 0 90px rgba(229, 9, 34, 0.14);
+  animation: orbit-spin 80s linear infinite;
+}
+
+.wheel-tick {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  width: 1px;
+  height: 24px;
+  transform-origin: 0 376px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.wheel-tick.major {
+  height: 50px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.wheel-ring {
+  inset: 94px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.ring-one {
+  animation: orbit-spin 36s linear infinite reverse;
+}
+
+.ring-two {
+  inset: 182px;
+  border-style: solid;
+  border-color: rgba(229, 9, 34, 0.38);
+  animation: orbit-spin 52s linear infinite;
+}
+
+.station-spoke {
+  inset: 50%;
+  width: 690px;
+  height: 2px;
+  margin-left: -345px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  border-radius: 0;
+}
+
+.spoke-a { transform: rotate(24deg); }
+.spoke-b { transform: rotate(114deg); }
+
+.station-core {
+  inset: 236px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(circle, rgba(7, 9, 15, 0.96), rgba(7, 9, 15, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 90px rgba(0, 0, 0, 0.52);
+}
+
+.station-core::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 24px rgba(229, 9, 34, 0.9);
+}
+
+.space-clock-time {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 86px;
+}
+
+.mission-kicker {
+  color: var(--accent);
+  font-size: 18px;
+  letter-spacing: 8px;
+}
+
+.mission-kicker.red {
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.mission-kicker.red::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 54px;
+  height: 3px;
+  background: var(--accent);
+}

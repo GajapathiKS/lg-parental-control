@@ -41,8 +41,8 @@ var SpaceScene = (function () {
     }
 
     _rings = [
-      { x: _width * 0.77, y: _height * 0.38, r: 190, tilt: -0.34, speed: 0.00012 },
-      { x: _width * 0.22, y: _height * 0.72, r: 310, tilt: 0.2, speed: -0.00007 },
+      { x: _width * 0.76, y: _height * 0.46, r: 430, tilt: -0.28, speed: 0.00006 },
+      { x: _width * 0.76, y: _height * 0.46, r: 540, tilt: -0.19, speed: -0.00004 },
     ];
   }
 
@@ -77,9 +77,9 @@ var SpaceScene = (function () {
     }
     _ctx.restore();
 
-    _drawPlanet(time);
+    _drawEarth(time);
+    _drawOrbiter(time);
     _drawRings(time);
-    _drawGrid(time);
   }
 
   function _drawNebula(x, y, radius, color) {
@@ -90,27 +90,77 @@ var SpaceScene = (function () {
     _ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
   }
 
-  function _drawPlanet(time) {
-    var x = _width * 0.79;
-    var y = _height * 0.46;
-    var r = 138;
-    var g = _ctx.createRadialGradient(x - 42, y - 50, 12, x, y, r);
-    g.addColorStop(0, '#dffbff');
-    g.addColorStop(0.25, '#64e6ff');
-    g.addColorStop(0.72, '#1b5b8a');
-    g.addColorStop(1, '#061321');
+  function _drawEarth(time) {
+    var x = _width * 0.84;
+    var y = _height * 0.48;
+    var r = Math.min(_width, _height) * 0.34;
+    var g = _ctx.createRadialGradient(x - r * 0.34, y - r * 0.38, r * 0.05, x, y, r);
+    g.addColorStop(0, '#eef4ef');
+    g.addColorStop(0.18, '#b6c7b1');
+    g.addColorStop(0.42, '#49674f');
+    g.addColorStop(0.62, '#263b42');
+    g.addColorStop(0.82, '#111923');
+    g.addColorStop(1, '#02050a');
     _ctx.fillStyle = g;
     _ctx.beginPath();
     _ctx.arc(x, y, r, 0, Math.PI * 2);
     _ctx.fill();
 
-    _ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-    _ctx.lineWidth = 2;
-    for (var i = -2; i <= 2; i++) {
+    _ctx.save();
+    _ctx.clip();
+    _ctx.globalAlpha = 0.28;
+    _ctx.fillStyle = '#d7c59a';
+    for (var i = 0; i < 8; i++) {
       _ctx.beginPath();
-      _ctx.ellipse(x, y + i * 28 + Math.sin(time * 0.0004 + i) * 3, r * 0.86, 10, -0.15, 0, Math.PI * 2);
-      _ctx.stroke();
+      _ctx.ellipse(
+        x - r * 0.35 + i * r * 0.16 + Math.sin(time * 0.00015 + i) * 8,
+        y - r * 0.24 + Math.sin(i) * r * 0.32,
+        r * (0.16 + (i % 3) * 0.05),
+        r * 0.045,
+        -0.35 + i * 0.18,
+        0,
+        Math.PI * 2
+      );
+      _ctx.fill();
     }
+    _ctx.globalAlpha = 0.22;
+    _ctx.fillStyle = '#ffffff';
+    for (var c = 0; c < 11; c++) {
+      _ctx.beginPath();
+      _ctx.ellipse(
+        x - r * 0.5 + c * r * 0.12,
+        y - r * 0.36 + Math.sin(time * 0.00025 + c) * r * 0.42,
+        r * 0.18,
+        r * 0.025,
+        0.2,
+        0,
+        Math.PI * 2
+      );
+      _ctx.fill();
+    }
+    _ctx.restore();
+
+    _ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    _ctx.lineWidth = 2;
+    _ctx.beginPath();
+    _ctx.arc(x, y, r + 1, Math.PI * 1.02, Math.PI * 1.8);
+    _ctx.stroke();
+  }
+
+  function _drawOrbiter(time) {
+    var x = _width * 0.63 + Math.sin(time * 0.00035) * 28;
+    var y = _height * 0.52 + Math.cos(time * 0.00025) * 18;
+    _ctx.save();
+    _ctx.translate(x, y);
+    _ctx.rotate(-0.18);
+    _ctx.fillStyle = 'rgba(210, 214, 218, 0.86)';
+    _ctx.fillRect(-38, -16, 76, 32);
+    _ctx.fillStyle = 'rgba(44, 49, 57, 0.95)';
+    _ctx.fillRect(-70, -5, 32, 10);
+    _ctx.fillRect(38, -5, 32, 10);
+    _ctx.strokeStyle = 'rgba(255, 255, 255, 0.38)';
+    _ctx.strokeRect(-38, -16, 76, 32);
+    _ctx.restore();
   }
 
   function _drawRings(time) {
