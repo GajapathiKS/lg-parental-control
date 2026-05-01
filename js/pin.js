@@ -98,6 +98,37 @@ var Pin = (function () {
     return true;
   }
 
+  async function setProfileCode(profileId, code) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        var salt = generateSalt();
+        profiles[i].launchCodeHash = await hashPin(code, salt);
+        profiles[i].launchCodeSalt = salt;
+        profiles[i].launchCodeUpdatedAt = new Date().toISOString();
+        Storage.saveProfiles(profiles);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async function verifyProfileCode(profileId, attempt) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        if (!profiles[i].launchCodeHash || !profiles[i].launchCodeSalt) return true;
+        var attemptHash = await hashPin(attempt, profiles[i].launchCodeSalt);
+        return attemptHash === profiles[i].launchCodeHash;
+      }
+    }
+    return false;
+  }
+
+  function generateShareableCode() {
+    return _generateNumericCode(6);
+  }
+
   /**
    * Check if a PIN has been set
    */
@@ -131,6 +162,9 @@ var Pin = (function () {
     verify: verify,
     generateOneTimeCodes: generateOneTimeCodes,
     verifyOneTimeCode: verifyOneTimeCode,
+    setProfileCode: setProfileCode,
+    verifyProfileCode: verifyProfileCode,
+    generateShareableCode: generateShareableCode,
     isSet: isSet,
     isValidFormat: isValidFormat,
   };

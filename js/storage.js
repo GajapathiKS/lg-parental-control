@@ -23,6 +23,7 @@ var Storage = (function () {
     screensaverEnabled: true,
     screensaverManifest: 'assets/screensaver/manifest.json',
     screensaverIntervalSeconds: 12,
+    warningMilestones: [20, 40, 59],
   };
 
   function get(key) {

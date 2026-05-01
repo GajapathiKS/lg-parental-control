@@ -88,6 +88,23 @@ var TestPin = (function () {
     var secondCodeWorks = await Pin.verifyOneTimeCode(codes[1]);
     assert(secondCodeWorks === true, 'Next ordered one-time code works');
 
+    // --- Per-profile child launch code ---
+    Storage.resetAll();
+    var profile = Storage.addProfile({
+      name: 'LaunchKid',
+      avatar: 'rocket',
+      type: 'child',
+      dailyLimitMinutes: 60,
+      isActive: true,
+    });
+    var generated = Pin.generateShareableCode();
+    assert(/^\d{6}$/.test(generated), 'Shareable child code is 6 digits');
+    await Pin.setProfileCode(profile.id, '246810');
+    var childCodeValid = await Pin.verifyProfileCode(profile.id, '246810');
+    assert(childCodeValid === true, 'Per-profile child launch code verifies');
+    var childCodeWrong = await Pin.verifyProfileCode(profile.id, '111111');
+    assert(childCodeWrong === false, 'Wrong per-profile child launch code rejected');
+
     // --- Cleanup ---
     Storage.resetAll();
 

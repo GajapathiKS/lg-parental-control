@@ -264,6 +264,7 @@ var Screens = (function () {
     if (!status) { App.navigate('profile-select'); return; }
 
     var profile = Storage.getProfiles().find(function (p) { return p.id === params.profileId; });
+    var blocked = status.blockingRule;
 
     _render(
       '<div class="screen">' +
@@ -281,10 +282,17 @@ var Screens = (function () {
             '</div>' +
             '<div style="width: 500px;">' + Components.renderProgressBar(status.percentage) + '</div>' +
             '<div style="color: var(--text-muted);">' + status.minutesUsed + ' of ' + status.limitMinutes + ' minutes used</div>' +
-            (status.isLimitReached
+            (blocked
+              ? '<div class="card" style="max-width: 640px; text-align: center;"><div class="mission-kicker red">Quiet hours</div>' +
+                '<div style="font-size: 34px; font-weight: 700;">' + _escapeHtml(blocked.name) + '</div>' +
+                '<div style="color: var(--text-secondary); margin-top: 12px;">Watching is blocked from ' + blocked.startTime + ' to ' + blocked.endTime + '.</div></div>'
+              : status.isLimitReached
               ? '<div style="color: var(--danger); font-size: 32px; font-weight: 600;">Time\'s up for today!</div>'
-              : '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-watching">' +
-                (status.isActive ? 'Watching...' : 'Start Watching') + '</button>'
+              : '<div class="row">' +
+                  '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-watching">' +
+                    (status.isActive ? 'Watching...' : 'Start Watching') + '</button>' +
+                  (status.isActive ? '<button class="btn btn-large focusable" tabindex="0" id="btn-stop-watching">Stop Watching</button>' : '') +
+                '</div>'
             ) +
           '</div>' +
         '</div>' +
@@ -295,23 +303,20 @@ var Screens = (function () {
     if (startBtn) {
       startBtn.addEventListener('click', function () {
         if (!Timer.isRunning()) {
-          Timer.start(params.profileId, {
-            onTick: function (state) {
-              var timeEl = document.getElementById('time-remaining');
-              if (timeEl) {
-                timeEl.innerHTML = Components.renderTimeDisplay(state.minutesRemaining, 'remaining today');
-              }
-            },
-            onWarning: function (data) {
-              Lockscreen.showWarning(data.minutesRemaining, data.profileName);
-            },
-            onLimitReached: function (data) {
-              Lockscreen.showLockscreen(data.profileName);
-            },
-          });
-          startBtn.textContent = 'Watching...';
-          startBtn.classList.remove('btn-primary');
+          if (profile.launchCodeHash) {
+            App.navigate('profile-code-entry', { profileId: params.profileId });
+          } else {
+            _startWatching(params.profileId);
+          }
         }
+      });
+    }
+
+    var stopBtn = document.getElementById('btn-stop-watching');
+    if (stopBtn) {
+      stopBtn.addEventListener('click', function () {
+        Timer.stop();
+        App.navigate('profile-select');
       });
     }
 
@@ -319,6 +324,69 @@ var Screens = (function () {
       Timer.stop();
       App.navigate('profile-select');
     });
+  }
+
+  function _startWatching(profileId) {
+    Timer.start(profileId, {
+      onTick: function (state) {
+        var timeEl = document.getElementById('time-remaining');
+        if (timeEl) {
+          timeEl.innerHTML = Components.renderTimeDisplay(state.minutesRemaining, 'remaining today');
+        }
+      },
+      onWarning: function (data) {
+        Lockscreen.showWarning(data.minutesRemaining, data.profileName, data);
+      },
+      onLimitReached: function (data) {
+        Lockscreen.showLockscreen(data.profileName);
+      },
+    });
+    App.navigate('child-dashboard', { profileId: profileId });
+  }
+
+  function showProfileCodeEntry(params) {
+    var pinDigits = [];
+    var profile = Storage.getProfiles().find(function (p) { return p.id === params.profileId; });
+    if (!profile) { App.navigate('profile-select'); return; }
+
+    _render(
+      '<div class="screen center">' +
+        '<div class="col" style="align-items: center;">' +
+          '<div class="mission-kicker red">Launch code</div>' +
+          '<div class="title">Enter ' + _escapeHtml(profile.name) + '\'s Code</div>' +
+          '<div class="subtitle">This code can be changed from Parent Dashboard.</div>' +
+          '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
+          '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
+          Components.renderNumpad(Components.getRandomizedNumpadKeys()) +
+        '</div>' +
+      '</div>'
+    );
+
+    Components.attachNumpadListeners(_container,
+      function onDigit(d) {
+        if (pinDigits.length < 6) {
+          pinDigits.push(d);
+          document.getElementById('pin-dots').innerHTML = Components.renderPinDots(6, pinDigits.length);
+        }
+      },
+      function onClear() {
+        pinDigits = [];
+        document.getElementById('pin-dots').innerHTML = Components.renderPinDots(6, 0);
+        document.getElementById('pin-error').textContent = '';
+      },
+      async function onSubmit() {
+        var valid = await Pin.verifyProfileCode(params.profileId, pinDigits.join(''));
+        if (!valid) {
+          document.getElementById('pin-error').textContent = 'Wrong launch code.';
+          pinDigits = [];
+          document.getElementById('pin-dots').innerHTML = Components.renderPinDots(6, 0);
+          return;
+        }
+        _startWatching(params.profileId);
+      }
+    );
+
+    Navigation.onBack(function () { App.navigate('child-dashboard', { profileId: params.profileId }); });
   }
 
   // ─── PIN ENTRY (reusable) ────────────────────────
@@ -333,7 +401,7 @@ var Screens = (function () {
           '<div class="title">Enter Parent PIN</div>' +
           '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
           '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
-          Components.renderNumpad() +
+          Components.renderNumpad(Components.getRandomizedNumpadKeys()) +
         '</div>' +
       '</div>'
     );
@@ -389,11 +457,12 @@ var Screens = (function () {
         '<div class="row" style="margin-bottom: 16px;">' +
           '<div style="font-size: 48px;">' + Components.getAvatarEmoji(p.avatar) + '</div>' +
           '<div class="col" style="gap: 2px;">' +
-            '<div style="font-size: 28px; font-weight: 600;">' + p.name + '</div>' +
+            '<div style="font-size: 28px; font-weight: 600;">' + _escapeHtml(p.name) + '</div>' +
             '<div style="color: var(--text-muted);">' + status.minutesUsed + ' / ' + status.limitMinutes + ' min</div>' +
           '</div>' +
         '</div>' +
         Components.renderProgressBar(status.percentage) +
+        '<button class="btn focusable" tabindex="0" data-control-profile="' + p.id + '" style="margin-top: 18px; width: 100%;">Control Mission</button>' +
         '</div>';
     });
     html += '</div>';
@@ -417,8 +486,130 @@ var Screens = (function () {
     document.getElementById('btn-edit-profiles').addEventListener('click', function () { App.navigate('create-profile'); });
     document.getElementById('btn-settings').addEventListener('click', function () { App.navigate('settings'); });
     document.getElementById('btn-change-pin').addEventListener('click', function () { App.navigate('setup-pin', { isChange: true }); });
+    _container.querySelectorAll('[data-control-profile]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        App.navigate('profile-controls', { profileId: this.getAttribute('data-control-profile') });
+      });
+    });
 
     Navigation.onBack(function () { App.navigate('profile-select'); });
+  }
+
+  function showProfileControls(profileId) {
+    var profile = Storage.getProfiles().find(function (p) { return p.id === profileId; });
+    if (!profile) { App.navigate('parent-dashboard'); return; }
+
+    var rules = profile.rules || [];
+    var html = '<div class="screen parent-control-screen">' +
+      '<div class="row">' +
+        '<div><div class="mission-kicker red">Child mission control</div><div class="title">' + _escapeHtml(profile.name) + '</div></div>' +
+        '<div class="spacer"></div>' +
+        '<button class="btn focusable" tabindex="0" id="btn-back-parent">Back</button>' +
+      '</div>' +
+      '<div class="parent-control-grid">' +
+        '<div class="card control-card">' +
+          '<div class="label">Daily limit</div>' +
+          '<div class="row">' +
+            '<button class="btn focusable" tabindex="0" id="profile-limit-down">-</button>' +
+            '<div id="profile-limit-val" class="control-value">' + profile.dailyLimitMinutes + ' min</div>' +
+            '<button class="btn focusable" tabindex="0" id="profile-limit-up">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card control-card">' +
+          '<div class="label">Kid launch code</div>' +
+          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Share one separate 6-digit code with this child.</div>' +
+          '<div id="profile-code-output" class="control-code">' + (profile.launchCodeHash ? 'Configured' : 'Not set') + '</div>' +
+          '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Generate New Code</button>' +
+        '</div>' +
+        '<div class="card control-card wide">' +
+          '<div class="label">Blocked time rule</div>' +
+          '<div class="row">' +
+            '<input class="focusable control-input" tabindex="0" id="rule-name" value="School night wind-down" maxlength="28">' +
+            '<input class="focusable control-time" tabindex="0" id="rule-start" value="20:30" maxlength="5">' +
+            '<input class="focusable control-time" tabindex="0" id="rule-end" value="06:30" maxlength="5">' +
+            '<button class="btn btn-primary focusable" tabindex="0" id="btn-add-rule">Add Rule</button>' +
+          '</div>' +
+          '<div class="rules-list">';
+
+    if (!rules.length) {
+      html += '<div style="color: var(--text-muted); margin-top: 18px;">No blocked windows yet.</div>';
+    }
+    rules.forEach(function (rule) {
+      html += '<div class="rule-row">' +
+        '<div><strong>' + _escapeHtml(rule.name) + '</strong><span>' + rule.startTime + ' - ' + rule.endTime + '</span></div>' +
+        '<button class="btn focusable" tabindex="0" data-delete-rule="' + rule.id + '">Remove</button>' +
+        '</div>';
+    });
+
+    html += '</div></div></div></div>';
+    _render(html);
+
+    document.getElementById('btn-back-parent').addEventListener('click', function () { App.navigate('parent-dashboard'); });
+    document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
+    document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
+    document.getElementById('btn-profile-code').addEventListener('click', async function () {
+      var code = Pin.generateShareableCode();
+      await Pin.setProfileCode(profileId, code);
+      document.getElementById('profile-code-output').textContent = code;
+    });
+    document.getElementById('btn-add-rule').addEventListener('click', function () {
+      var name = document.getElementById('rule-name').value.trim() || 'Blocked window';
+      var start = document.getElementById('rule-start').value.trim();
+      var end = document.getElementById('rule-end').value.trim();
+      if (!/^\d{2}:\d{2}$/.test(start) || !/^\d{2}:\d{2}$/.test(end)) return;
+      _addBlockRule(profileId, name, start, end);
+    });
+    _container.querySelectorAll('[data-delete-rule]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        _deleteRule(profileId, this.getAttribute('data-delete-rule'));
+      });
+    });
+    Navigation.onBack(function () { App.navigate('parent-dashboard'); });
+  }
+
+  function _updateProfileLimit(profileId, delta) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        profiles[i].dailyLimitMinutes = Math.max(15, Math.min(480, profiles[i].dailyLimitMinutes + delta));
+        Storage.saveProfiles(profiles);
+        App.navigate('profile-controls', { profileId: profileId });
+        return;
+      }
+    }
+  }
+
+  function _addBlockRule(profileId, name, start, end) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        profiles[i].rules = profiles[i].rules || [];
+        profiles[i].rules.push({
+          id: 'rule_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+          name: name,
+          mode: 'block',
+          days: [0, 1, 2, 3, 4, 5, 6],
+          startTime: start,
+          endTime: end,
+          enabled: true,
+        });
+        Storage.saveProfiles(profiles);
+        App.navigate('profile-controls', { profileId: profileId });
+        return;
+      }
+    }
+  }
+
+  function _deleteRule(profileId, ruleId) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        profiles[i].rules = (profiles[i].rules || []).filter(function (rule) { return rule.id !== ruleId; });
+        Storage.saveProfiles(profiles);
+        App.navigate('profile-controls', { profileId: profileId });
+        return;
+      }
+    }
   }
 
   // ─── SETTINGS ────────────────────────────────────
@@ -530,7 +721,15 @@ var Screens = (function () {
     showChildDashboard: showChildDashboard,
     showPinEntry: showPinEntry,
     showParentDashboard: showParentDashboard,
+    showProfileControls: showProfileControls,
+    showProfileCodeEntry: showProfileCodeEntry,
     showSettings: showSettings,
     showOneTimeCodes: showOneTimeCodes,
   };
+
+  function _escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
 })();

@@ -28,6 +28,7 @@ The app is a solid browser-testable webOS prototype: it has local profiles, loca
 
 5. webOS enforcement
    - Connect the UI timer to the JS service through Luna calls.
+   - Relaunch or notify from the service for 20, 40, and 59 minute checkpoints when the app is backgrounded.
    - Verify whether sideloaded service permissions can block or relaunch foreground TV activity.
    - Document TV-model-specific limitations.
 

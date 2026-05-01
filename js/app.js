@@ -89,6 +89,14 @@ var App = (function () {
         Screens.showParentDashboard();
         break;
 
+      case 'profile-controls':
+        Screens.showProfileControls(params.profileId);
+        break;
+
+      case 'profile-code-entry':
+        Screens.showProfileCodeEntry(params);
+        break;
+
       case 'settings':
         Screens.showSettings();
         break;

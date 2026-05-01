@@ -599,3 +599,80 @@ body {
   height: 3px;
   background: var(--accent);
 }
+
+.parent-control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 34px;
+}
+
+.control-card {
+  min-height: 230px;
+}
+
+.control-card.wide {
+  grid-column: 1 / -1;
+}
+
+.control-value {
+  min-width: 180px;
+  text-align: center;
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.control-code {
+  min-height: 56px;
+  margin-bottom: 18px;
+  color: var(--text-primary);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.control-input,
+.control-time {
+  background: rgba(1, 2, 7, 0.64);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 26px;
+  padding: 18px 20px;
+}
+
+.control-input {
+  flex: 1;
+}
+
+.control-time {
+  width: 130px;
+  text-align: center;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.rule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rule-row strong,
+.rule-row span {
+  display: block;
+}
+
+.rule-row span {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}

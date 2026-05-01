@@ -9,12 +9,18 @@ var Lockscreen = (function () {
   }
 
   function showWarning(minutesLeft, profileName) {
+    var title = 'Mission timer';
+    var body = _escapeHtml(profileName) + ', your screen time is almost complete.';
+    if (arguments.length > 2 && arguments[2] && arguments[2].type === 'milestone') {
+      title = arguments[2].milestoneMinutes + ' minute checkpoint';
+      body = _escapeHtml(profileName) + ', you have been watching for ' + arguments[2].milestoneMinutes + ' minutes.';
+    }
     _overlay.classList.remove('hidden');
     _overlay.innerHTML =
       '<div class="modal" style="text-align: center;">' +
         '<div class="mission-kicker">Mission timer</div>' +
-        '<div class="title" style="color: var(--warning);">' + minutesLeft + ' minutes left</div>' +
-        '<div class="subtitle">' + _escapeHtml(profileName) + ', your screen time is almost complete.</div>' +
+        '<div class="title" style="color: var(--warning);">' + title + '</div>' +
+        '<div class="subtitle">' + body + '</div>' +
         '<button class="btn btn-primary focusable" tabindex="0" id="btn-dismiss-warning">OK</button>' +
       '</div>';
 

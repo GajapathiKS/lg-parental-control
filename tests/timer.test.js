@@ -118,6 +118,24 @@ var TestTimer = (function () {
     var badStatus = Timer.getStatus('nonexistent_profile');
     assert(badStatus === null, 'Null status for nonexistent profile');
 
+    // --- Blocking rules ---
+    var now = new Date();
+    var currentHour = String(now.getHours()).padStart(2, '0');
+    var nextHour = String((now.getHours() + 1) % 24).padStart(2, '0');
+    Storage.updateProfile(testProfileId, {
+      rules: [{
+        id: 'rule_test',
+        name: 'Test block',
+        mode: 'block',
+        days: [now.getDay()],
+        startTime: currentHour + ':00',
+        endTime: nextHour + ':59',
+        enabled: true,
+      }],
+    });
+    var blockingRule = Timer.getBlockingRule(testProfileId, now);
+    assert(blockingRule !== null && blockingRule.name === 'Test block', 'Active block rule is detected');
+
     // --- Cleanup ---
     Storage.resetAll();
 
