@@ -38,11 +38,15 @@ body {
 
 /* Screen container */
 #screen-container {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
+  width: 1920px;
+  height: 1080px;
+  position: absolute;
+  left: 0;
+  top: 0;
   z-index: 1;
   overflow: hidden;
+  transform: translate(var(--stage-left, 0px), var(--stage-top, 0px)) scale(var(--stage-scale, 1));
+  transform-origin: top left;
 }
 
 .screen {
@@ -115,11 +119,13 @@ body {
 
 /* Modal overlay */
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(var(--stage-left, 0px), var(--stage-top, 0px)) scale(var(--stage-scale, 1));
+  transform-origin: top left;
   background: rgba(0, 0, 0, 0.72);
   display: flex;
   justify-content: center;

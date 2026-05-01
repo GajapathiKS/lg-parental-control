@@ -12,6 +12,7 @@ var App = (function () {
     console.info('[App] Initializing Parental Control v1.0.0');
 
     // Initialize modules
+    Viewport.init();
     Screens.init();
     Lockscreen.init();
     Navigation.init();
