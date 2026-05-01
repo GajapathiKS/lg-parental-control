@@ -1,0 +1,173 @@
+/* Main Styles — Dark Theme for TV */
+:root {
+  --bg-primary: #060812;
+  --bg-secondary: #101827;
+  --bg-card: #172033;
+  --text-primary: #f4f7ff;
+  --text-secondary: #b8c7df;
+  --text-muted: #7f8da8;
+  --accent: #64e6ff;
+  --accent-hover: #9ff2ff;
+  --success: #72f2a6;
+  --warning: #ffd166;
+  --danger: #ff5d73;
+  --border: #31415f;
+  --radius: 8px;
+  --shadow: 0 10px 34px rgba(0, 0, 0, 0.42);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(100, 230, 255, 0.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 18%, rgba(255, 209, 102, 0.16) 0 1px, transparent 2px),
+    radial-gradient(circle at 62% 78%, rgba(114, 242, 166, 0.14) 0 1px, transparent 2px),
+    linear-gradient(135deg, #060812 0%, #101827 52%, #1b1230 100%);
+}
+
+/* Screen container */
+#screen-container {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  padding: 60px 80px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:
+    linear-gradient(90deg, rgba(100, 230, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(100, 230, 255, 0.04) 1px, transparent 1px);
+  background-size: 120px 120px;
+}
+
+.screen.hidden { display: none; }
+
+/* Typography */
+.title {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: 0;
+}
+
+.subtitle {
+  font-size: 32px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.label {
+  font-size: 24px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+}
+
+/* Layout helpers */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spacer { flex: 1; }
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid rgba(100, 230, 255, 0.16);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(100, 230, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 48px;
+  min-width: 600px;
+  max-width: 900px;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.5s ease;
+}
+
+.progress-bar-fill.safe { background: var(--success); }
+.progress-bar-fill.warning { background: var(--warning); }
+.progress-bar-fill.danger { background: var(--danger); }
+
+/* Avatar grid */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.avatar-option {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 56px;
+  background: var(--bg-card);
+  border: 3px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.avatar-option.selected,
+.avatar-option:focus {
+  border-color: var(--accent);
+}

@@ -1,0 +1,18 @@
+{
+  "id": "com.parental.control",
+  "version": "1.0.0",
+  "vendor": "Open Source",
+  "type": "web",
+  "main": "index.html",
+  "title": "Parental Control",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#1a1a2e",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": false,
+  "handlesRelaunch": true,
+  "requiredPermissions": [
+    "time.query",
+    "activity.operation"
+  ]
+}

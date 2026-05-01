@@ -1,0 +1,47 @@
+/* TV CSS Reset — optimized for 10-foot UI (viewed from couch) */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  font-family: 'LG Smart UI', 'Segoe UI', sans-serif;
+  font-size: 28px;
+  line-height: 1.4;
+  color: #e0e0e0;
+  background-color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: none;
+}
+
+/* No scrollbars on TV */
+::-webkit-scrollbar { display: none; }
+
+/* Focus states — critical for D-pad navigation */
+.focusable:focus {
+  outline: 3px solid #4fc3f7;
+  outline-offset: 4px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+}
+
+.focusable {
+  outline: 3px solid transparent;
+  outline-offset: 4px;
+  transition: outline-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.focusable:focus {
+  transform: scale(1.02);
+}
+
+/* Prevent text selection */
+* { -webkit-user-select: none; user-select: none; }
+
+/* Hide cursor — TV uses D-pad, not mouse */
+* { cursor: none; }

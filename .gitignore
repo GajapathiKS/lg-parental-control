@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# webOS build output
+*.ipk
+dist/
+
+# Node modules (for service)
+service/node_modules/
+
+# Local overrides
+CLAUDE.local.md
+*.local
+
+# Logs
+*.log

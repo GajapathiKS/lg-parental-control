@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Parental Control — Test Runner</title>
+  <style>
+    body { background: #1a1a2e; color: #e0e0e0; font-family: monospace; padding: 40px; font-size: 16px; }
+    h1 { color: #4fc3f7; }
+    .pass { color: #66bb6a; }
+    .fail { color: #ef5350; }
+    #results { margin-top: 24px; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Parental Control — Test Runner</h1>
+  <p>Open browser console (F12) to see detailed test output.</p>
+  <div id="results">Running tests...</div>
+
+  <!-- Load app modules (same order as index.html) -->
+  <script src="../webOSTVjs/webOSTV.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/pin.js"></script>
+  <script src="../js/timer.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/ui/components.js"></script>
+  <script src="../js/ui/screens.js"></script>
+  <script src="../js/ui/lockscreen.js"></script>
+  <!-- Don't load app.js — it auto-inits and needs DOM elements -->
+
+  <!-- Load test modules -->
+  <script src="storage.test.js"></script>
+  <script src="timer.test.js"></script>
+  <script src="pin.test.js"></script>
+
+  <script>
+    (async function runAllTests() {
+      var totalPassed = 0;
+      var totalFailed = 0;
+
+      // Storage tests (sync)
+      var s = TestStorage.run();
+      totalPassed += s.passed;
+      totalFailed += s.failed;
+
+      // Timer tests (sync)
+      var t = TestTimer.run();
+      totalPassed += t.passed;
+      totalFailed += t.failed;
+
+      // PIN tests (async — uses Web Crypto)
+      var p = await TestPin.run();
+      totalPassed += p.passed;
+      totalFailed += p.failed;
+
+      // Display results
+      var el = document.getElementById('results');
+      var status = totalFailed === 0 ? 'ALL TESTS PASSED' : totalFailed + ' TESTS FAILED';
+      var cls = totalFailed === 0 ? 'pass' : 'fail';
+      el.innerHTML = '<span class="' + cls + '">' + status + '</span>' +
+        '<br>' + totalPassed + ' passed, ' + totalFailed + ' failed';
+
+      console.log('');
+      console.log('═══════════════════════════');
+      console.log('TOTAL: ' + totalPassed + ' passed, ' + totalFailed + ' failed');
+      console.log('═══════════════════════════');
+    })();
+  </script>
+</body>
+</html>

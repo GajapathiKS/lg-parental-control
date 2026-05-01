@@ -1,0 +1,11 @@
+{
+  "id": "com.parental.control.service",
+  "description": "Background timer service for parental control",
+  "engine": "node",
+  "services": [
+    {
+      "name": "com.parental.control.service",
+      "description": "Tracks screen time and enforces limits"
+    }
+  ]
+}
