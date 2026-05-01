@@ -20,6 +20,13 @@ body {
   background: #03040b;
 }
 
+#app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #010207;
+}
+
 #space-scene {
   position: fixed;
   inset: 0;
@@ -31,10 +38,11 @@ body {
 
 /* Screen container */
 #screen-container {
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .screen {
@@ -110,8 +118,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.72);
   display: flex;
   justify-content: center;

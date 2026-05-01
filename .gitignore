@@ -11,6 +11,8 @@ Thumbs.db
 # webOS build output
 *.ipk
 dist/
+TV/
+Tools/
 
 # Node modules (for service)
 service/node_modules/
