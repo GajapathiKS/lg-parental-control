@@ -1,4 +1,14 @@
 {
   "basePath": "assets/screensaver/",
-  "photos": []
+  "photos": [
+    { "src": "space-01.png", "alt": "Child astronaut in orbit" },
+    { "src": "space-02.png", "alt": "Earth orbit hero" },
+    { "src": "space-03.png", "alt": "Astronaut in observation module" },
+    { "src": "space-04.png", "alt": "Astronaut spacewalk" },
+    { "src": "space-05.png", "alt": "Solar system mission path" },
+    { "src": "space-06.png", "alt": "Moon landing site" },
+    { "src": "space-07.png", "alt": "Mars rover landscape" },
+    { "src": "space-08.png", "alt": "Deep space nebula" },
+    { "src": "space-09.png", "alt": "Space exploration scene" }
+  ]
 }

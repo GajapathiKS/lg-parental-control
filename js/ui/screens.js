@@ -274,6 +274,9 @@ var Screens = (function () {
             '<div class="title" style="margin: 0;">Hi, ' + profile.name + '!</div>' +
             '<div class="subtitle" style="margin: 0;">Here\'s your screen time for today</div>' +
           '</div>' +
+          '<div class="spacer"></div>' +
+          '<button class="btn focusable" tabindex="0" id="btn-child-crew">Crew</button>' +
+          '<button class="btn focusable" tabindex="0" id="btn-child-parent">Parent Controls</button>' +
         '</div>' +
         '<div class="center" style="flex: 1;">' +
           '<div class="col" style="align-items: center; gap: 24px;">' +
@@ -319,6 +322,14 @@ var Screens = (function () {
         App.navigate('profile-select');
       });
     }
+
+    document.getElementById('btn-child-crew').addEventListener('click', function () {
+      if (Timer.isRunning()) Timer.stop();
+      App.navigate('profile-select');
+    });
+    document.getElementById('btn-child-parent').addEventListener('click', function () {
+      App.navigate('pin-entry', { next: 'parent-dashboard' });
+    });
 
     Navigation.onBack(function () {
       Timer.stop();
