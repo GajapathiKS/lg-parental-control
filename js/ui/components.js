@@ -27,8 +27,8 @@ var Components = (function () {
    * @param {function} onClear - called when clear is pressed
    * @param {function} onSubmit - called when OK is pressed
    */
-  function renderNumpad(onDigit, onClear, onSubmit) {
-    var keys = ['1','2','3','4','5','6','7','8','9','CLR','0','OK'];
+  function renderNumpad(keys) {
+    keys = keys || ['1','2','3','4','5','6','7','8','9','CLR','0','OK'];
     var html = '<div class="numpad">';
     keys.forEach(function (key) {
       var cls = 'numpad-key focusable';
@@ -37,6 +37,17 @@ var Components = (function () {
     });
     html += '</div>';
     return html;
+  }
+
+  function getRandomizedNumpadKeys() {
+    var digits = ['0','1','2','3','4','5','6','7','8','9'];
+    for (var i = digits.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = digits[i];
+      digits[i] = digits[j];
+      digits[j] = tmp;
+    }
+    return digits.slice(0, 9).concat(['CLR', digits[9], 'OK']);
   }
 
   function attachNumpadListeners(container, onDigit, onClear, onSubmit) {
@@ -149,6 +160,7 @@ var Components = (function () {
     AVATARS: AVATARS,
     getAvatarEmoji: getAvatarEmoji,
     renderNumpad: renderNumpad,
+    getRandomizedNumpadKeys: getRandomizedNumpadKeys,
     attachNumpadListeners: attachNumpadListeners,
     renderPinDots: renderPinDots,
     renderProgressBar: renderProgressBar,

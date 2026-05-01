@@ -1,5 +1,5 @@
 /**
- * Lockscreen Module — "Time's up" overlay and warning popup
+ * Lockscreen Module - warning popup, blocked screen, and parent override.
  */
 var Lockscreen = (function () {
   var _overlay = null;
@@ -8,17 +8,14 @@ var Lockscreen = (function () {
     _overlay = document.getElementById('modal-overlay');
   }
 
-  /**
-   * Show warning popup (X minutes remaining)
-   */
   function showWarning(minutesLeft, profileName) {
     _overlay.classList.remove('hidden');
     _overlay.innerHTML =
       '<div class="modal" style="text-align: center;">' +
-        '<div style="font-size: 72px; margin-bottom: 16px;">⏰</div>' +
-        '<div class="title" style="color: var(--warning);">' + minutesLeft + ' minutes left!</div>' +
-        '<div class="subtitle">' + profileName + ', your screen time is almost up.</div>' +
-        '<button class="btn btn-primary focusable" tabindex="0" id="btn-dismiss-warning">OK, got it!</button>' +
+        '<div class="mission-kicker">Mission timer</div>' +
+        '<div class="title" style="color: var(--warning);">' + minutesLeft + ' minutes left</div>' +
+        '<div class="subtitle">' + _escapeHtml(profileName) + ', your screen time is almost complete.</div>' +
+        '<button class="btn btn-primary focusable" tabindex="0" id="btn-dismiss-warning">OK</button>' +
       '</div>';
 
     document.getElementById('btn-dismiss-warning').addEventListener('click', function () {
@@ -27,20 +24,24 @@ var Lockscreen = (function () {
     Navigation.focusFirst(_overlay);
   }
 
-  /**
-   * Show lockscreen (time limit reached — blocks everything)
-   */
   function showLockscreen(profileName) {
     _overlay.classList.remove('hidden');
     _overlay.innerHTML =
-      '<div class="modal" style="text-align: center; min-width: 700px;">' +
-        '<div style="font-size: 96px; margin-bottom: 16px;">🛑</div>' +
-        '<div class="title" style="color: var(--danger);">Time\'s Up!</div>' +
-        '<div class="subtitle">' + profileName + ', you\'ve used all your screen time for today.<br>Come back tomorrow!</div>' +
-        '<div style="margin-top: 40px;">' +
-          '<button class="btn focusable" tabindex="0" id="btn-unlock">🔒 Unlock with Parent PIN</button>' +
+      '<div class="lockscreen-immersive">' +
+        '<div id="screensaver-stage" class="screensaver-stage"></div>' +
+        '<div class="lockscreen-panel">' +
+          '<div class="mission-kicker">Mission pause</div>' +
+          '<div class="title" style="color: var(--danger);">Time\'s Up</div>' +
+          '<div class="subtitle">' + _escapeHtml(profileName) + ', your screen time mission is complete for today.</div>' +
+          '<div class="lockscreen-readout">' +
+            '<span>Next launch window</span>' +
+            '<strong>Tomorrow</strong>' +
+          '</div>' +
+          '<button class="btn focusable" tabindex="0" id="btn-unlock">Unlock with Parent PIN</button>' +
         '</div>' +
       '</div>';
+
+    Screensaver.start(document.getElementById('screensaver-stage'));
 
     document.getElementById('btn-unlock').addEventListener('click', function () {
       hide();
@@ -49,16 +50,14 @@ var Lockscreen = (function () {
     Navigation.focusFirst(_overlay);
   }
 
-  /**
-   * Show extension choice (after PIN unlock from lockscreen)
-   */
   function showExtensionChoice() {
     var settings = Storage.getSettings();
     _overlay.classList.remove('hidden');
     _overlay.innerHTML =
       '<div class="modal" style="text-align: center;">' +
-        '<div class="title">Parent Override</div>' +
-        '<div class="subtitle">What would you like to do?</div>' +
+        '<div class="mission-kicker">Parent override</div>' +
+        '<div class="title">Choose Next Step</div>' +
+        '<div class="subtitle">Approve a short extension or return to parent controls.</div>' +
         '<div class="col" style="gap: 16px; margin-top: 24px;">' +
           '<button class="btn btn-primary focusable" tabindex="0" id="btn-extend">Extend time by ' + settings.extensionMinutes + ' minutes</button>' +
           '<button class="btn focusable" tabindex="0" id="btn-switch">Switch to another profile</button>' +
@@ -84,12 +83,19 @@ var Lockscreen = (function () {
   }
 
   function hide() {
+    Screensaver.stop();
     _overlay.classList.add('hidden');
     _overlay.innerHTML = '';
   }
 
   function isVisible() {
     return !_overlay.classList.contains('hidden');
+  }
+
+  function _escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   return {

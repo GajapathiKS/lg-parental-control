@@ -9,7 +9,7 @@
   border: none;
   border-radius: var(--radius);
   color: var(--text-primary);
-  background: var(--bg-card);
+  background: rgba(23, 32, 51, 0.86);
   border: 1px solid var(--border);
   min-width: 200px;
   transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
@@ -47,7 +47,8 @@
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  background: var(--bg-card);
+  background: rgba(23, 32, 51, 0.78);
+  backdrop-filter: blur(10px);
   border: 2px solid var(--border);
   color: var(--text-primary);
   font-size: 40px;

@@ -21,7 +21,12 @@ The app is a solid browser-testable webOS prototype: it has local profiles, loca
    - Keep contrast high and focus states obvious for TV distance.
    - Avoid decorative noise where the parent needs fast scanning.
 
-4. webOS enforcement
+4. Blocked-time screensaver
+   - Rotate local family photos from `assets/screensaver/manifest.json`.
+   - Scale landscape and portrait images with a blurred cover background plus a clear contained foreground.
+   - Keep an always-visible mission clock with local time, date, and next launch window.
+
+5. webOS enforcement
    - Connect the UI timer to the JS service through Luna calls.
    - Verify whether sideloaded service permissions can block or relaunch foreground TV activity.
    - Document TV-model-specific limitations.

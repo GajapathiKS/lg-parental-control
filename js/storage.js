@@ -20,6 +20,9 @@ var Storage = (function () {
     extensionMinutes: 30,
     lockAfterLimit: true,
     theme: 'dark',
+    screensaverEnabled: true,
+    screensaverManifest: 'assets/screensaver/manifest.json',
+    screensaverIntervalSeconds: 12,
   };
 
   function get(key) {
@@ -75,7 +78,7 @@ var Storage = (function () {
 
   function addProfile(profile) {
     var profiles = getProfiles();
-    profile.id = 'profile_' + Date.now();
+    profile.id = 'profile_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
     profiles.push(profile);
     saveProfiles(profiles);
     return profile;

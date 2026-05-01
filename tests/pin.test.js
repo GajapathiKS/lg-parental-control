@@ -80,7 +80,13 @@ var TestPin = (function () {
     assert(Storage.getUnusedOneTimeCodeCount() === 29, 'Used one-time code is consumed');
 
     var firstCodeAgain = await Pin.verifyOneTimeCode(codes[0]);
-    assert(firstCodeAgain === false, 'Consumed one-time code cannot be reused');
+    assert(firstCodeAgain === false, 'Consumed one-time code cannot be reused out of order');
+
+    var thirdCodeEarly = await Pin.verifyOneTimeCode(codes[2]);
+    assert(thirdCodeEarly === false, 'Future one-time code cannot be used early');
+
+    var secondCodeWorks = await Pin.verifyOneTimeCode(codes[1]);
+    assert(secondCodeWorks === true, 'Next ordered one-time code works');
 
     // --- Cleanup ---
     Storage.resetAll();

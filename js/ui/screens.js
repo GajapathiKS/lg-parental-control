@@ -43,7 +43,7 @@ var Screens = (function () {
           '<div class="subtitle" style="text-align: center;">' + subtitle + '</div>' +
           '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
           '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
-          Components.renderNumpad() +
+          Components.renderNumpad(Components.getRandomizedNumpadKeys()) +
         '</div>' +
       '</div>'
     );
@@ -82,7 +82,7 @@ var Screens = (function () {
           '<div class="subtitle">Enter the same PIN again</div>' +
           '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
           '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
-          Components.renderNumpad() +
+          Components.renderNumpad(Components.getRandomizedNumpadKeys()) +
         '</div>' +
       '</div>'
     );
@@ -489,7 +489,9 @@ var Screens = (function () {
         '<div class="title">One-time TV passwords</div>' +
         '<div class="subtitle">These 30 codes are shown once. After a code unlocks parent access, it is consumed.</div>' +
         '<textarea readonly class="focusable" tabindex="0" style="width: 100%; height: 260px; resize: none; font-size: 28px; line-height: 1.5; padding: 20px; color: var(--text-primary); background: var(--bg-primary); border: 2px solid var(--border); border-radius: var(--radius);">' +
-          codes.join('\\n') +
+          codes.map(function (code, index) {
+            return String(index + 1).padStart(2, '0') + '. ' + code;
+          }).join('\\n') +
         '</textarea>' +
         '<div class="row" style="justify-content: flex-end; margin-top: 24px;">' +
           '<button class="btn btn-primary focusable" tabindex="0" id="btn-close-codes">Done</button>' +

@@ -60,6 +60,7 @@ var Pin = (function () {
       plainCodes.push(code);
       storedCodes.push({
         id: 'code_' + Date.now() + '_' + plainCodes.length,
+        position: plainCodes.length,
         hash: hash,
         salt: salt,
         createdAt: new Date().toISOString(),
@@ -76,16 +77,25 @@ var Pin = (function () {
    */
   async function verifyOneTimeCode(attempt) {
     var codes = Storage.getOneTimeCodes();
-    for (var i = 0; i < codes.length; i++) {
-      if (codes[i].usedAt) continue;
-      var attemptHash = await hashPin(attempt, codes[i].salt);
-      if (attemptHash === codes[i].hash) {
-        codes[i].usedAt = new Date().toISOString();
-        Storage.saveOneTimeCodes(codes);
-        return true;
+    if (!codes.length) return false;
+
+    var currentIndex = _getCurrentOneTimeCodeIndex(codes);
+    var currentCode = codes[currentIndex];
+    var attemptHash = await hashPin(attempt, currentCode.salt);
+    if (attemptHash !== currentCode.hash) {
+      return false;
+    }
+
+    currentCode.usedAt = new Date().toISOString();
+
+    if (currentIndex === codes.length - 1) {
+      for (var i = 0; i < codes.length; i++) {
+        codes[i].usedAt = null;
       }
     }
-    return false;
+
+    Storage.saveOneTimeCodes(codes);
+    return true;
   }
 
   /**
@@ -107,6 +117,13 @@ var Pin = (function () {
     var bytes = new Uint8Array(length);
     crypto.getRandomValues(bytes);
     return Array.from(bytes, function (b) { return String(b % 10); }).join('');
+  }
+
+  function _getCurrentOneTimeCodeIndex(codes) {
+    for (var i = 0; i < codes.length; i++) {
+      if (!codes[i].usedAt) return i;
+    }
+    return 0;
   }
 
   return {

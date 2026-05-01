@@ -15,6 +15,7 @@ var App = (function () {
     Screens.init();
     Lockscreen.init();
     Navigation.init();
+    SpaceScene.init();
 
     // Purge old usage logs on startup
     Storage.purgeOldLogs();
