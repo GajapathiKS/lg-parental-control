@@ -133,6 +133,7 @@ var Screens = (function () {
     var selectedAvatar = 'bear';
     var name = '';
     var limit = 120;
+    var childPassword = '';
 
     _render(
       '<div class="screen">' +
@@ -151,6 +152,11 @@ var Screens = (function () {
               '<div id="limit-display" style="font-size: 40px; min-width: 150px; text-align: center;">' + limit + ' min</div>' +
               '<button class="btn focusable" tabindex="0" id="limit-up">+</button>' +
             '</div>' +
+            '<div class="label" style="margin-top: 24px;">Kid Password</div>' +
+            '<input id="profile-password" class="focusable" tabindex="0" type="password" inputmode="numeric" ' +
+              'style="background: var(--bg-card); border: 2px solid var(--border); color: var(--text-primary); ' +
+              'padding: 16px 24px; font-size: 28px; border-radius: var(--radius); width: 100%;" ' +
+              'placeholder="4-6 digits" maxlength="6">' +
           '</div>' +
           '<div class="col" style="flex: 1;">' +
             '<div class="label">Avatar</div>' +
@@ -182,19 +188,27 @@ var Screens = (function () {
     });
 
     // Save
-    document.getElementById('btn-save-profile').addEventListener('click', function () {
+    document.getElementById('btn-save-profile').addEventListener('click', async function () {
       name = document.getElementById('profile-name').value.trim();
+      childPassword = document.getElementById('profile-password').value.trim();
       if (!name) {
         document.getElementById('profile-name').style.borderColor = 'var(--danger)';
         return;
       }
-      Storage.addProfile({
+      if (childPassword && !Pin.isValidFormat(childPassword)) {
+        document.getElementById('profile-password').style.borderColor = 'var(--danger)';
+        return;
+      }
+      var profile = Storage.addProfile({
         name: name,
         avatar: selectedAvatar,
         type: 'child',
         dailyLimitMinutes: limit,
         isActive: true,
       });
+      if (childPassword) {
+        await Pin.setProfileCode(profile.id, childPassword);
+      }
 
       if (!Storage.isSetupComplete()) {
         Storage.markSetupComplete();
@@ -511,10 +525,7 @@ var Screens = (function () {
     if (!profile) { App.navigate('parent-dashboard'); return; }
 
     var rules = profile.rules || [];
-    var codeProgress = Pin.getProfileCodeProgress(profileId);
-    var codeStatus = codeProgress
-      ? 'Next code: ' + String(codeProgress.next).padStart(2, '0') + ' of ' + codeProgress.total
-      : (profile.launchCodeHash ? 'Single code configured' : 'Not set');
+    var codeStatus = profile.launchCodeHash ? 'Configured' : 'Not set';
     var html = '<div class="screen parent-control-screen">' +
       '<div class="row">' +
         '<div><div class="mission-kicker red">Child mission control</div><div class="title">' + _escapeHtml(profile.name) + '</div></div>' +
@@ -531,10 +542,13 @@ var Screens = (function () {
           '</div>' +
         '</div>' +
         '<div class="card control-card">' +
-          '<div class="label">Kid launch passwords</div>' +
-          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Generate 30 ordered passwords for this child. Only the next password works.</div>' +
+          '<div class="label">Kid profile password</div>' +
+          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Set or change the password this child enters before watching.</div>' +
           '<div id="profile-code-output" class="control-code">' + codeStatus + '</div>' +
-          '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Generate 30 Passwords</button>' +
+          '<div class="row">' +
+            '<input id="profile-code-input" class="focusable control-time" tabindex="0" type="password" inputmode="numeric" placeholder="4-6" maxlength="6">' +
+            '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Save Password</button>' +
+          '</div>' +
         '</div>' +
         '<div class="card control-card wide">' +
           '<div class="label">Blocked time rule</div>' +
@@ -563,8 +577,13 @@ var Screens = (function () {
     document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
     document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
     document.getElementById('btn-profile-code').addEventListener('click', async function () {
-      var codes = await Pin.generateProfileCodeSet(profileId, 30);
-      showProfileCodeSet(profileId, profile.name, codes);
+      var code = document.getElementById('profile-code-input').value.trim();
+      if (!Pin.isValidFormat(code)) {
+        document.getElementById('profile-code-input').style.borderColor = 'var(--danger)';
+        return;
+      }
+      await Pin.setProfileCode(profileId, code);
+      App.navigate('profile-controls', { profileId: profileId });
     });
     document.getElementById('btn-add-rule').addEventListener('click', function () {
       var name = document.getElementById('rule-name').value.trim() || 'Blocked window';
@@ -579,32 +598,6 @@ var Screens = (function () {
       });
     });
     Navigation.onBack(function () { App.navigate('parent-dashboard'); });
-  }
-
-  function showProfileCodeSet(profileId, profileName, codes) {
-    var overlay = document.getElementById('modal-overlay');
-    overlay.classList.remove('hidden');
-    overlay.innerHTML =
-      '<div class="modal" style="min-width: 820px;">' +
-        '<div class="mission-kicker red">Launch passwords</div>' +
-        '<div class="title">' + _escapeHtml(profileName) + '</div>' +
-        '<div class="subtitle">Give these to this child separately. They must be used in order; after 30, the cycle starts again at 1.</div>' +
-        '<textarea readonly class="focusable" tabindex="0" style="width: 100%; height: 310px; resize: none; font-size: 28px; line-height: 1.5; padding: 20px; color: var(--text-primary); background: var(--bg-primary); border: 2px solid var(--border); border-radius: var(--radius);">' +
-          codes.map(function (code, index) {
-            return String(index + 1).padStart(2, '0') + '. ' + code;
-          }).join('\\n') +
-        '</textarea>' +
-        '<div class="row" style="justify-content: flex-end; margin-top: 24px;">' +
-          '<button class="btn btn-primary focusable" tabindex="0" id="btn-close-profile-codes">Done</button>' +
-        '</div>' +
-      '</div>';
-
-    document.getElementById('btn-close-profile-codes').addEventListener('click', function () {
-      overlay.classList.add('hidden');
-      overlay.innerHTML = '';
-      App.navigate('profile-controls', { profileId: profileId });
-    });
-    Navigation.focusFirst(overlay);
   }
 
   function _updateProfileLimit(profileId, delta) {

@@ -8,6 +8,7 @@ var Screensaver = (function () {
   var _interval = null;
   var _clockInterval = null;
   var _stage = null;
+  var _photoSlidesShown = 0;
 
   function start(stage) {
     stop();
@@ -22,12 +23,10 @@ var Screensaver = (function () {
     _loadPhotos(settings.screensaverManifest).then(function (photos) {
       _photos = photos;
       _index = 0;
+      _photoSlidesShown = 0;
       _renderCurrent();
       if (_photos.length > 1) {
-        _interval = setInterval(function () {
-          _index = (_index + 1) % _photos.length;
-          _renderCurrent();
-        }, Math.max(5, settings.screensaverIntervalSeconds || 12) * 1000);
+        _interval = setInterval(_advance, Math.max(5, settings.screensaverIntervalSeconds || 12) * 1000);
       }
     });
   }
@@ -75,12 +74,13 @@ var Screensaver = (function () {
     }
 
     var photo = _photos[_index];
+    _photoSlidesShown++;
     _stage.innerHTML =
       '<div class="screensaver-photo-frame">' +
         '<img class="screensaver-photo-bg" src="' + _escapeAttr(photo.src) + '" alt="">' +
         '<img class="screensaver-photo-main" src="' + _escapeAttr(photo.src) + '" alt="' + _escapeAttr(photo.alt) + '">' +
       '</div>' +
-      _renderClock();
+      _renderMiniClock();
     _updateClock();
   }
 
@@ -92,11 +92,43 @@ var Screensaver = (function () {
         '<div class="orbit orbit-b"></div>' +
         '<div class="fallback-planet"></div>' +
       '</div>' +
-      _renderClock();
+      _renderGiantClock();
     _updateClock();
   }
 
-  function _renderClock() {
+  function _advance() {
+    if (!_stage) return;
+    if (_photos.length && _photoSlidesShown > 0 && _photoSlidesShown % 6 === 0) {
+      _renderClockBreak();
+      _photoSlidesShown++;
+      return;
+    }
+    if (_photos.length) {
+      _index = (_index + 1) % _photos.length;
+    }
+    _renderCurrent();
+  }
+
+  function _renderClockBreak() {
+    var photo = _photos.length ? _photos[Math.floor(Math.random() * _photos.length)] : null;
+    _stage.innerHTML =
+      '<div class="screensaver-photo-frame">' +
+        (photo
+          ? '<img class="screensaver-photo-bg" src="' + _escapeAttr(photo.src) + '" alt="">'
+          : '<div class="screensaver-fallback"></div>') +
+      '</div>' +
+      _renderGiantClock();
+    _updateClock();
+  }
+
+  function _renderMiniClock() {
+    return '<div class="screensaver-mini-clock">' +
+      '<div id="space-clock-time" class="mini-clock-time">--:--</div>' +
+      '<div id="space-clock-date" class="mini-clock-date">Preparing orbit</div>' +
+      '</div>';
+  }
+
+  function _renderGiantClock() {
     return '<div class="space-wheel-clock">' +
       '<div class="wheel-rim">' + _renderTicks(72) + '</div>' +
       '<div class="wheel-ring ring-one"></div>' +

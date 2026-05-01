@@ -113,45 +113,10 @@ var Pin = (function () {
     return false;
   }
 
-  async function generateProfileCodeSet(profileId, count) {
-    count = count || 30;
-    var profiles = Storage.getProfiles();
-    for (var i = 0; i < profiles.length; i++) {
-      if (profiles[i].id === profileId) {
-        var plainCodes = [];
-        var storedCodes = [];
-        var seen = {};
-        while (plainCodes.length < count) {
-          var code = _generateNumericCode(6);
-          if (seen[code]) continue;
-          seen[code] = true;
-          var salt = generateSalt();
-          plainCodes.push(code);
-          storedCodes.push({
-            position: plainCodes.length,
-            hash: await hashPin(code, salt),
-            salt: salt,
-            usedAt: null,
-          });
-        }
-        profiles[i].launchCodeHash = null;
-        profiles[i].launchCodeSalt = null;
-        profiles[i].launchCodes = storedCodes;
-        profiles[i].launchCodesUpdatedAt = new Date().toISOString();
-        Storage.saveProfiles(profiles);
-        return plainCodes;
-      }
-    }
-    return [];
-  }
-
   async function verifyProfileCode(profileId, attempt) {
     var profiles = Storage.getProfiles();
     for (var i = 0; i < profiles.length; i++) {
       if (profiles[i].id === profileId) {
-        if (profiles[i].launchCodes && profiles[i].launchCodes.length) {
-          return await _verifyProfileCodeSet(profiles, i, attempt);
-        }
         if (!profiles[i].launchCodeHash || !profiles[i].launchCodeSalt) return true;
         var attemptHash = await hashPin(attempt, profiles[i].launchCodeSalt);
         return attemptHash === profiles[i].launchCodeHash;
@@ -162,22 +127,6 @@ var Pin = (function () {
 
   function generateShareableCode() {
     return _generateNumericCode(6);
-  }
-
-  function getProfileCodeProgress(profileId) {
-    var profiles = Storage.getProfiles();
-    for (var i = 0; i < profiles.length; i++) {
-      if (profiles[i].id === profileId) {
-        var codes = profiles[i].launchCodes || [];
-        if (!codes.length) return null;
-        return {
-          total: codes.length,
-          next: _getCurrentOneTimeCodeIndex(codes) + 1,
-          remaining: codes.filter(function (code) { return !code.usedAt; }).length,
-        };
-      }
-    }
-    return null;
   }
 
   /**
@@ -208,32 +157,13 @@ var Pin = (function () {
     return 0;
   }
 
-  async function _verifyProfileCodeSet(profiles, profileIndex, attempt) {
-    var codes = profiles[profileIndex].launchCodes;
-    var currentIndex = _getCurrentOneTimeCodeIndex(codes);
-    var currentCode = codes[currentIndex];
-    var attemptHash = await hashPin(attempt, currentCode.salt);
-    if (attemptHash !== currentCode.hash) return false;
-
-    currentCode.usedAt = new Date().toISOString();
-    if (currentIndex === codes.length - 1) {
-      for (var i = 0; i < codes.length; i++) {
-        codes[i].usedAt = null;
-      }
-    }
-    Storage.saveProfiles(profiles);
-    return true;
-  }
-
   return {
     setPin: setPin,
     verify: verify,
     generateOneTimeCodes: generateOneTimeCodes,
     verifyOneTimeCode: verifyOneTimeCode,
     setProfileCode: setProfileCode,
-    generateProfileCodeSet: generateProfileCodeSet,
     verifyProfileCode: verifyProfileCode,
-    getProfileCodeProgress: getProfileCodeProgress,
     generateShareableCode: generateShareableCode,
     isSet: isSet,
     isValidFormat: isValidFormat,

@@ -490,6 +490,33 @@ body {
   color: var(--text-primary);
 }
 
+.screensaver-mini-clock {
+  position: absolute;
+  right: 58px;
+  bottom: 46px;
+  min-width: 260px;
+  padding: 20px 24px;
+  text-align: right;
+  color: var(--text-primary);
+  background: linear-gradient(90deg, rgba(1, 2, 7, 0.1), rgba(1, 2, 7, 0.72));
+  border-right: 3px solid var(--accent);
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.8);
+}
+
+.mini-clock-time {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mini-clock-date {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
 .wheel-rim,
 .wheel-ring,
 .station-core,
