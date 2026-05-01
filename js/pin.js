@@ -3,6 +3,12 @@
  * Uses Web Crypto API (available in webOS browser engine)
  */
 var Pin = (function () {
+  var DAILY_ADMIN_CODES = [
+    '814239', '527604', '936185', '240713', '681952', '395806', '752491', '168530',
+    '409267', '823145', '571928', '046381', '692734', '315870', '784206', '209463',
+    '638751', '951027', '472690', '806314', '193582', '560749', '724018', '389625',
+    '015936', '647203', '258791', '970462', '431856', '709138', '586024',
+  ];
 
   function generateSalt() {
     var array = new Uint8Array(16);
@@ -125,6 +131,21 @@ var Pin = (function () {
     };
   }
 
+  function verifyDailyAdminCode(attempt, date) {
+    var info = getDailyAdminCodeInfo(date);
+    return attempt === info.code;
+  }
+
+  function getDailyAdminCodeInfo(date) {
+    var targetDate = date || new Date();
+    var day = targetDate.getDate();
+    return {
+      day: day,
+      code: DAILY_ADMIN_CODES[day - 1],
+      total: DAILY_ADMIN_CODES.length,
+    };
+  }
+
   async function setProfileCode(profileId, code) {
     var profiles = Storage.getProfiles();
     for (var i = 0; i < profiles.length; i++) {
@@ -190,6 +211,8 @@ var Pin = (function () {
     generateOneTimeCodes: generateOneTimeCodes,
     verifyOneTimeCode: verifyOneTimeCode,
     getOneTimeCodeProgress: getOneTimeCodeProgress,
+    verifyDailyAdminCode: verifyDailyAdminCode,
+    getDailyAdminCodeInfo: getDailyAdminCodeInfo,
     setProfileCode: setProfileCode,
     verifyProfileCode: verifyProfileCode,
     generateShareableCode: generateShareableCode,

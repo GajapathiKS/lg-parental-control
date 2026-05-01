@@ -94,6 +94,14 @@ var TestPin = (function () {
     var secondCodeWorks = await Pin.verifyOneTimeCode(codes[1]);
     assert(secondCodeWorks === true, 'Next ordered one-time code works');
 
+    // --- Daily admin override codes ---
+    var dayOneInfo = Pin.getDailyAdminCodeInfo(new Date(2026, 4, 1));
+    assert(dayOneInfo.day === 1 && dayOneInfo.code === '814239', 'Day 1 daily admin code is available');
+    assert(Pin.verifyDailyAdminCode('814239', new Date(2026, 4, 1)) === true,
+      'Today daily admin code verifies');
+    assert(Pin.verifyDailyAdminCode('527604', new Date(2026, 4, 1)) === false,
+      'Wrong day daily admin code is rejected');
+
     // --- Per-profile child launch code ---
     Storage.resetAll();
     var profile = Storage.addProfile({

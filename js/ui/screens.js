@@ -447,6 +447,9 @@ var Screens = (function () {
         var pin = pinDigits.join('');
         var valid = await Pin.verify(pin);
         if (!valid) {
+          valid = Pin.verifyDailyAdminCode(pin);
+        }
+        if (!valid) {
           valid = await Pin.verifyOneTimeCode(pin);
         }
         if (valid) {
