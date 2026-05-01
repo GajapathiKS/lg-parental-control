@@ -206,6 +206,7 @@ var Screens = (function () {
         dailyLimitMinutes: limit,
         isActive: true,
       });
+      Storage.ensureDefaultBedtimeRule();
       if (childPassword) {
         await Pin.setProfileCode(profile.id, childPassword);
       }
@@ -279,6 +280,7 @@ var Screens = (function () {
 
     var profile = Storage.getProfiles().find(function (p) { return p.id === params.profileId; });
     var blocked = status.blockingRule;
+    var blockedHtml = blocked ? _renderBlockedRule(blocked) : '';
 
     _render(
       '<div class="screen child-screen">' +
@@ -300,9 +302,7 @@ var Screens = (function () {
             '<div style="width: 500px;">' + Components.renderProgressBar(status.percentage) + '</div>' +
             '<div style="color: var(--text-muted);">' + status.minutesUsed + ' of ' + status.limitMinutes + ' minutes used</div>' +
             (blocked
-              ? '<div class="card" style="max-width: 640px; text-align: center;"><div class="mission-kicker red">Quiet hours</div>' +
-                '<div style="font-size: 34px; font-weight: 700;">' + _escapeHtml(blocked.name) + '</div>' +
-                '<div style="color: var(--text-secondary); margin-top: 12px;">Watching is blocked from ' + blocked.startTime + ' to ' + blocked.endTime + '.</div></div>'
+              ? blockedHtml
               : status.isLimitReached
               ? '<div style="color: var(--danger); font-size: 32px; font-weight: 600;">Time\'s up for today!</div>'
               : '<div class="row">' +
@@ -547,6 +547,7 @@ var Screens = (function () {
           '<div id="profile-code-output" class="control-code">' + codeStatus + '</div>' +
           '<div class="row">' +
             '<input id="profile-code-input" class="focusable control-time" tabindex="0" type="password" inputmode="numeric" placeholder="4-6" maxlength="6">' +
+            '<button class="btn focusable" tabindex="0" id="btn-generate-profile-code">Generate</button>' +
             '<button class="btn btn-primary focusable" tabindex="0" id="btn-profile-code">Save Password</button>' +
           '</div>' +
         '</div>' +
@@ -554,6 +555,11 @@ var Screens = (function () {
           '<div class="label">Blocked time rule</div>' +
           '<div class="row">' +
             '<input class="focusable control-input" tabindex="0" id="rule-name" value="School night wind-down" maxlength="28">' +
+            '<select class="focusable control-select" tabindex="0" id="rule-days">' +
+              '<option value="all">All days</option>' +
+              '<option value="school">School days</option>' +
+              '<option value="weekend">Weekend</option>' +
+            '</select>' +
             '<input class="focusable control-time" tabindex="0" id="rule-start" value="20:30" maxlength="5">' +
             '<input class="focusable control-time" tabindex="0" id="rule-end" value="06:30" maxlength="5">' +
             '<button class="btn btn-primary focusable" tabindex="0" id="btn-add-rule">Add Rule</button>' +
@@ -565,7 +571,7 @@ var Screens = (function () {
     }
     rules.forEach(function (rule) {
       html += '<div class="rule-row">' +
-        '<div><strong>' + _escapeHtml(rule.name) + '</strong><span>' + rule.startTime + ' - ' + rule.endTime + '</span></div>' +
+        '<div><strong>' + _escapeHtml(rule.name) + '</strong><span>' + _formatRuleDays(rule.days) + ' &middot; ' + rule.startTime + ' - ' + rule.endTime + '</span></div>' +
         '<button class="btn focusable" tabindex="0" data-delete-rule="' + rule.id + '">Remove</button>' +
         '</div>';
     });
@@ -576,6 +582,12 @@ var Screens = (function () {
     document.getElementById('btn-back-parent').addEventListener('click', function () { App.navigate('parent-dashboard'); });
     document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
     document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
+    document.getElementById('btn-generate-profile-code').addEventListener('click', async function () {
+      var code = Pin.generateShareableCode();
+      await Pin.setProfileCode(profileId, code);
+      document.getElementById('profile-code-input').value = '';
+      document.getElementById('profile-code-output').textContent = code;
+    });
     document.getElementById('btn-profile-code').addEventListener('click', async function () {
       var code = document.getElementById('profile-code-input').value.trim();
       if (!Pin.isValidFormat(code)) {
@@ -589,8 +601,9 @@ var Screens = (function () {
       var name = document.getElementById('rule-name').value.trim() || 'Blocked window';
       var start = document.getElementById('rule-start').value.trim();
       var end = document.getElementById('rule-end').value.trim();
+      var days = _getRuleDays(document.getElementById('rule-days').value);
       if (!/^\d{2}:\d{2}$/.test(start) || !/^\d{2}:\d{2}$/.test(end)) return;
-      _addBlockRule(profileId, name, start, end);
+      _addBlockRule(profileId, name, start, end, days);
     });
     _container.querySelectorAll('[data-delete-rule]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -612,7 +625,7 @@ var Screens = (function () {
     }
   }
 
-  function _addBlockRule(profileId, name, start, end) {
+  function _addBlockRule(profileId, name, start, end, days) {
     var profiles = Storage.getProfiles();
     for (var i = 0; i < profiles.length; i++) {
       if (profiles[i].id === profileId) {
@@ -621,7 +634,7 @@ var Screens = (function () {
           id: 'rule_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
           name: name,
           mode: 'block',
-          days: [0, 1, 2, 3, 4, 5, 6],
+          days: days,
           startTime: start,
           endTime: end,
           enabled: true,
@@ -631,6 +644,33 @@ var Screens = (function () {
         return;
       }
     }
+  }
+
+  function _getRuleDays(value) {
+    if (value === 'school') return [1, 2, 3, 4, 5];
+    if (value === 'weekend') return [0, 6];
+    return [0, 1, 2, 3, 4, 5, 6];
+  }
+
+  function _formatRuleDays(days) {
+    if (!days || days.length === 7) return 'All days';
+    var sorted = days.slice().sort().join(',');
+    if (sorted === '1,2,3,4,5') return 'School days';
+    if (sorted === '0,6') return 'Weekend';
+    var names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return days.map(function (day) { return names[day]; }).join(', ');
+  }
+
+  function _renderBlockedRule(rule) {
+    if (rule.message) {
+      return '<div class="card blocked-message-card">' +
+        '<div class="blocked-message">' + _escapeHtml(rule.message).replace(/\n/g, '<br>') + '</div>' +
+        '</div>';
+    }
+
+    return '<div class="card" style="max-width: 640px; text-align: center;"><div class="mission-kicker red">Quiet hours</div>' +
+      '<div style="font-size: 34px; font-weight: 700;">' + _escapeHtml(rule.name) + '</div>' +
+      '<div style="color: var(--text-secondary); margin-top: 12px;">Watching is blocked from ' + rule.startTime + ' to ' + rule.endTime + '.</div></div>';
   }
 
   function _deleteRule(profileId, ruleId) {
@@ -649,7 +689,11 @@ var Screens = (function () {
 
   function showSettings() {
     var settings = Storage.getSettings();
-    var unusedCodes = Storage.getUnusedOneTimeCodeCount();
+    var codeProgress = Pin.getOneTimeCodeProgress();
+    var adminCodeText = codeProgress.isGenerated
+      ? 'Next admin code: ' + String(codeProgress.nextPosition).padStart(2, '0') + ' of ' + codeProgress.total + '. ' +
+        codeProgress.unused + ' unused; codes only work once and must be used in order.'
+      : 'No admin code sheet generated yet. Generate 30 and save them separately.';
 
     _render(
       '<div class="screen settings-screen">' +
@@ -679,7 +723,7 @@ var Screens = (function () {
           '</div>' +
           '<div class="card row">' +
             '<div class="col" style="flex: 1;"><div style="font-weight: 600;">One-time TV passwords</div>' +
-            '<div style="color: var(--text-muted);">' + unusedCodes + ' unused codes available. Each code works once.</div></div>' +
+            '<div style="color: var(--text-muted);">' + adminCodeText + '</div></div>' +
             '<button class="btn focusable" tabindex="0" id="btn-generate-codes">Generate 30</button>' +
           '</div>' +
           '<button class="btn btn-danger focusable" tabindex="0" id="btn-reset" style="align-self: flex-start;">Reset All Data</button>' +

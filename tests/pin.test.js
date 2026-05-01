@@ -74,10 +74,16 @@ var TestPin = (function () {
     var codes = await Pin.generateOneTimeCodes(30);
     assert(codes.length === 30, 'Generates 30 one-time codes');
     assert(Storage.getUnusedOneTimeCodeCount() === 30, 'All generated codes start unused');
+    var initialProgress = Pin.getOneTimeCodeProgress();
+    assert(initialProgress.nextPosition === 1 && initialProgress.unused === 30,
+      'One-time code progress starts at code 1 of 30');
 
     var firstCodeWorks = await Pin.verifyOneTimeCode(codes[0]);
     assert(firstCodeWorks === true, 'One-time code works once');
     assert(Storage.getUnusedOneTimeCodeCount() === 29, 'Used one-time code is consumed');
+    var afterFirstProgress = Pin.getOneTimeCodeProgress();
+    assert(afterFirstProgress.nextPosition === 2 && afterFirstProgress.used === 1,
+      'One-time code progress advances after use');
 
     var firstCodeAgain = await Pin.verifyOneTimeCode(codes[0]);
     assert(firstCodeAgain === false, 'Consumed one-time code cannot be reused out of order');

@@ -136,6 +136,12 @@ var TestTimer = (function () {
     var blockingRule = Timer.getBlockingRule(testProfileId, now);
     assert(blockingRule !== null && blockingRule.name === 'Test block', 'Active block rule is detected');
 
+    Storage.updateProfile(testProfileId, { rules: [] });
+    Storage.ensureDefaultBedtimeRule();
+    var bedtimeBlock = Timer.getBlockingRule(testProfileId, new Date(2026, 4, 1, 19, 0, 0));
+    assert(bedtimeBlock !== null && bedtimeBlock.startTime === '18:30',
+      'Default bedtime rule blocks watching after 6:30 PM');
+
     // --- Cleanup ---
     Storage.resetAll();
 

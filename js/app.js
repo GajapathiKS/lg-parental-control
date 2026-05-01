@@ -19,6 +19,7 @@ var App = (function () {
 
     // Purge old usage logs on startup
     Storage.purgeOldLogs();
+    Storage.ensureDefaultBedtimeRule();
 
     // Always require profile selection on TV launch. This prevents a previous
     // session from bypassing the child/profile choice screen.

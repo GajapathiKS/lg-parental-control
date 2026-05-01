@@ -98,6 +98,33 @@ var Pin = (function () {
     return true;
   }
 
+  function getOneTimeCodeProgress() {
+    var codes = Storage.getOneTimeCodes();
+    if (!codes.length) {
+      return {
+        total: 0,
+        nextPosition: 0,
+        used: 0,
+        unused: 0,
+        isGenerated: false,
+      };
+    }
+
+    var currentIndex = _getCurrentOneTimeCodeIndex(codes);
+    var used = 0;
+    for (var i = 0; i < codes.length; i++) {
+      if (codes[i].usedAt) used++;
+    }
+
+    return {
+      total: codes.length,
+      nextPosition: currentIndex + 1,
+      used: used,
+      unused: codes.length - used,
+      isGenerated: true,
+    };
+  }
+
   async function setProfileCode(profileId, code) {
     var profiles = Storage.getProfiles();
     for (var i = 0; i < profiles.length; i++) {
@@ -162,6 +189,7 @@ var Pin = (function () {
     verify: verify,
     generateOneTimeCodes: generateOneTimeCodes,
     verifyOneTimeCode: verifyOneTimeCode,
+    getOneTimeCodeProgress: getOneTimeCodeProgress,
     setProfileCode: setProfileCode,
     verifyProfileCode: verifyProfileCode,
     generateShareableCode: generateShareableCode,

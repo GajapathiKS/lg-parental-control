@@ -727,13 +727,19 @@ body {
 }
 
 .control-input,
-.control-time {
+.control-time,
+.control-select {
   background: rgba(1, 2, 7, 0.64);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius);
   color: var(--text-primary);
   font-size: 26px;
   padding: 18px 20px;
+}
+
+.control-select {
+  width: 210px;
+  height: 68px;
 }
 
 .control-input {
@@ -770,4 +776,17 @@ body {
 .rule-row span {
   margin-top: 6px;
   color: var(--text-secondary);
+}
+
+.blocked-message-card {
+  max-width: 820px;
+  text-align: center;
+}
+
+.blocked-message {
+  color: var(--text-primary);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.2;
 }

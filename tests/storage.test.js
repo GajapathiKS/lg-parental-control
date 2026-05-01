@@ -101,6 +101,10 @@ var TestStorage = (function () {
     assert(Storage.getProfiles().length === 2, 'Seed data creates 2 profiles');
     assert(Storage.getProfiles()[0].name === 'Riya', 'Seed profile 1 is Riya');
     assert(Storage.getProfiles()[1].name === 'Arjun', 'Seed profile 2 is Arjun');
+    assert(Storage.getProfiles()[0].rules[0].startTime === '18:30', 'Seed profile gets 6:30 PM bedtime block');
+
+    Storage.ensureDefaultBedtimeRule();
+    assert(Storage.getProfiles()[0].rules.length === 1, 'Bedtime block is not duplicated');
 
     // --- Purge ---
     // Add old entry manually

@@ -26,6 +26,17 @@ var Storage = (function () {
     warningMilestones: [20, 40, 59],
   };
 
+  var DEFAULT_BEDTIME_RULE = {
+    id: 'default_bedtime_1830',
+    name: 'Sleep wind-down',
+    mode: 'block',
+    days: [0, 1, 2, 3, 4, 5, 6],
+    startTime: '18:30',
+    endTime: '06:30',
+    enabled: true,
+    message: "Hey buddy, though your credits out of 60 mins left, it's not a good idea to watch screen, as it diturbs your sleep.\nGo and read a book",
+  };
+
   function get(key) {
     try {
       var raw = localStorage.getItem(key);
@@ -75,6 +86,26 @@ var Storage = (function () {
 
   function saveProfiles(profiles) {
     set(KEYS.PROFILES, profiles);
+  }
+
+  function ensureDefaultBedtimeRule() {
+    var profiles = getProfiles();
+    var changed = false;
+
+    profiles.forEach(function (profile) {
+      if (profile.type && profile.type !== 'child') return;
+      profile.rules = profile.rules || [];
+      var existing = profile.rules.find(function (rule) { return rule.id === DEFAULT_BEDTIME_RULE.id; });
+      if (existing) {
+        Object.assign(existing, DEFAULT_BEDTIME_RULE);
+      } else {
+        profile.rules.push(Object.assign({}, DEFAULT_BEDTIME_RULE));
+      }
+      changed = true;
+    });
+
+    if (changed) saveProfiles(profiles);
+    return changed;
   }
 
   function addProfile(profile) {
@@ -227,6 +258,7 @@ var Storage = (function () {
       { id: 'profile_1', name: 'Riya', avatar: '🐻', type: 'child', dailyLimitMinutes: 120, isActive: true },
       { id: 'profile_2', name: 'Arjun', avatar: '🚀', type: 'child', dailyLimitMinutes: 90, isActive: true },
     ]);
+    ensureDefaultBedtimeRule();
 
     saveSettings(Object.assign({}, DEFAULT_SETTINGS));
 
@@ -268,6 +300,7 @@ var Storage = (function () {
     getPinHash: getPinHash,
     getProfiles: getProfiles,
     saveProfiles: saveProfiles,
+    ensureDefaultBedtimeRule: ensureDefaultBedtimeRule,
     addProfile: addProfile,
     updateProfile: updateProfile,
     deleteProfile: deleteProfile,
