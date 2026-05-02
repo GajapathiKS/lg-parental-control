@@ -36,6 +36,9 @@ body {
   top: 0;
   z-index: 1;
   overflow: hidden;
+}
+
+html.viewport-scaled #screen-container {
   transform: translate(var(--stage-left, 0px), var(--stage-top, 0px)) scale(var(--stage-scale, 1));
   transform-origin: top left;
 }
@@ -115,13 +118,16 @@ body {
   left: 0;
   width: 1920px;
   height: 1080px;
-  transform: translate(var(--stage-left, 0px), var(--stage-top, 0px)) scale(var(--stage-scale, 1));
-  transform-origin: top left;
   background: rgba(0, 0, 0, 0.72);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+html.viewport-scaled .modal-overlay {
+  transform: translate(var(--stage-left, 0px), var(--stage-top, 0px)) scale(var(--stage-scale, 1));
+  transform-origin: top left;
 }
 
 .modal-overlay.hidden { display: none; }
