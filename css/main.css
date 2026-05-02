@@ -21,8 +21,13 @@ body {
 }
 
 #app {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
   overflow: hidden;
   background: #010207;
 }
@@ -152,19 +157,28 @@ html.viewport-scaled .modal-overlay {
 
 .screensaver-stage {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
 }
 
 .screensaver-photo-frame,
 .screensaver-fallback {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .screensaver-photo-bg {
   position: absolute;
-  inset: -5%;
+  top: -5%;
+  right: -5%;
+  bottom: -5%;
+  left: -5%;
   width: 110%;
   height: 110%;
   object-fit: cover;
@@ -174,7 +188,10 @@ html.viewport-scaled .modal-overlay {
 
 .screensaver-photo-main {
   position: absolute;
-  inset: 56px;
+  top: 56px;
+  right: 56px;
+  bottom: 56px;
+  left: 56px;
   width: calc(100% - 112px);
   height: calc(100% - 112px);
   object-fit: contain;
