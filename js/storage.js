@@ -255,8 +255,8 @@ var Storage = (function () {
     markSetupComplete();
 
     saveProfiles([
-      { id: 'profile_1', name: 'Riya', avatar: '🐻', type: 'child', dailyLimitMinutes: 120, isActive: true },
-      { id: 'profile_2', name: 'Arjun', avatar: '🚀', type: 'child', dailyLimitMinutes: 90, isActive: true },
+      { id: 'profile_1', name: 'Riya', avatar: 'bear', type: 'child', dailyLimitMinutes: 120, isActive: true },
+      { id: 'profile_2', name: 'Arjun', avatar: 'rocket', type: 'child', dailyLimitMinutes: 90, isActive: true },
     ]);
     ensureDefaultBedtimeRule();
 

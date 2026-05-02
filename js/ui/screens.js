@@ -270,6 +270,7 @@ var Screens = (function () {
     document.getElementById('btn-parent-access').addEventListener('click', function () {
       App.navigate('pin-entry', { next: 'parent-dashboard' });
     });
+    Navigation.clearBack();
   }
 
   // ─── CHILD DASHBOARD ─────────────────────────────
@@ -285,7 +286,7 @@ var Screens = (function () {
     _render(
       '<div class="screen child-screen">' +
         '<div class="row">' +
-          '<div style="font-size: 64px;">' + Components.getAvatarEmoji(profile.avatar) + '</div>' +
+          '<div class="profile-avatar">' + Components.getAvatarLabel(profile.avatar, profile.name) + '</div>' +
           '<div class="col" style="gap: 4px;">' +
             '<div class="title" style="margin: 0;">Hi, ' + profile.name + '!</div>' +
             '<div class="subtitle" style="margin: 0;">Here\'s your screen time for today</div>' +

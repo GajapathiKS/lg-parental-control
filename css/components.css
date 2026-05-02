@@ -119,13 +119,25 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: radial-gradient(circle at 30% 24%, #ffffff 0, #d8fbff 12%, #17455b 44%, #07111d 100%);
   border: 1px solid rgba(100, 230, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 64px;
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 900;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.72);
 }
+
+.avatar-bear { background: radial-gradient(circle at 32% 24%, #ffe6c7 0, #b86c3c 36%, #2b1212 100%); }
+.avatar-rocket { background: radial-gradient(circle at 32% 24%, #f4fbff 0, #5977a6 38%, #101627 100%); }
+.avatar-star { background: radial-gradient(circle at 32% 24%, #fff6b8 0, #d68d20 42%, #241204 100%); }
+.avatar-dino { background: radial-gradient(circle at 32% 24%, #d6ffdc 0, #328b5a 40%, #071910 100%); }
+.avatar-rainbow { background: radial-gradient(circle at 32% 24%, #ffffff 0, #d5488d 28%, #2363a8 62%, #0b1023 100%); }
+.avatar-robot { background: radial-gradient(circle at 32% 24%, #eef6ff 0, #6c7f94 38%, #111923 100%); }
+.avatar-cat { background: radial-gradient(circle at 32% 24%, #ffe8d2 0, #d78952 42%, #241208 100%); }
+.avatar-fish { background: radial-gradient(circle at 32% 24%, #d4fbff 0, #168aaa 42%, #061d2b 100%); }
 
 .profile-name {
   font-size: 32px;

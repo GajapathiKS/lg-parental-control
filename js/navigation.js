@@ -37,6 +37,7 @@ var Navigation = (function () {
       case 8:   // Backspace (browser fallback)
         if (_onBack) _onBack();
         e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
         break;
     }
   }
@@ -135,9 +136,14 @@ var Navigation = (function () {
     _onBack = callback;
   }
 
+  function clearBack() {
+    _onBack = function () {};
+  }
+
   return {
     init: init,
     focusFirst: focusFirst,
     onBack: onBack,
+    clearBack: clearBack,
   };
 })();

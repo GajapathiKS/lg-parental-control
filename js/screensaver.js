@@ -163,6 +163,7 @@ var Screensaver = (function () {
     timeEl.textContent = now.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
     });
     if (dateEl) {
       dateEl.textContent = now.toLocaleDateString([], {

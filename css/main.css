@@ -378,12 +378,24 @@ html.viewport-scaled .modal-overlay {
   height: 120px;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 56px;
-  background: var(--bg-card);
+  gap: 4px;
+  font-size: 34px;
+  font-weight: 900;
+  background: radial-gradient(circle at 30% 24%, #ffffff 0, #d8fbff 12%, #17455b 44%, #07111d 100%);
   border: 3px solid transparent;
   transition: border-color 0.15s;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.72);
+}
+
+.avatar-option small {
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .avatar-option.selected,
@@ -555,7 +567,7 @@ html.viewport-scaled .modal-overlay {
 
 .space-wheel-clock {
   position: absolute;
-  right: 64px;
+  left: 64px;
   top: 118px;
   width: 780px;
   height: 780px;
@@ -699,7 +711,7 @@ html.viewport-scaled .modal-overlay {
 
 .space-clock-time {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 108px;
+  font-size: 84px;
 }
 
 .mission-kicker {

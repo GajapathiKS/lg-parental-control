@@ -1,6 +1,6 @@
 {
   "id": "com.parental.control",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "vendor": "Open Source",
   "type": "web",
   "main": "index.html",
@@ -9,7 +9,7 @@
   "largeIcon": "largeIcon.png",
   "bgColor": "#1a1a2e",
   "resolution": "1920x1080",
-  "disableBackHistoryAPI": false,
+  "disableBackHistoryAPI": true,
   "handlesRelaunch": true,
   "requiredPermissions": [
     "time.query",
