@@ -109,5 +109,21 @@ var App = (function () {
 })();
 
 document.addEventListener('DOMContentLoaded', function () {
-  App.init();
+  try {
+    App.init();
+  } catch (e) {
+    console.error('[App] Startup failed', e);
+    var container = document.getElementById('screen-container');
+    if (container) {
+      container.innerHTML =
+        '<div class="screen landing-screen">' +
+          '<div class="top-nav"><div class="brand-mark">ORBIT</div></div>' +
+          '<div class="hero-copy">' +
+            '<div class="mission-kicker red">Startup check</div>' +
+            '<div class="hero-title compact">ORBIT<br>needs reset</div>' +
+            '<div class="hero-subtitle">Parent controls hit a startup error. Open Parent Settings after relaunch.</div>' +
+          '</div>' +
+        '</div>';
+    }
+  }
 });
