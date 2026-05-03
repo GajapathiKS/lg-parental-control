@@ -6,7 +6,8 @@ var Navigation = (function () {
   var _onBack = null;
 
   function init() {
-    document.addEventListener('keydown', _handleKeyDown);
+    document.addEventListener('keydown', _handleKeyDown, true);
+    document.addEventListener('keyup', _handleSystemKey, true);
   }
 
   function _handleKeyDown(e) {
@@ -39,6 +40,25 @@ var Navigation = (function () {
         e.preventDefault();
         if (e.stopPropagation) e.stopPropagation();
         break;
+      case 36:  // Home in browsers / some remotes
+      case 172: // webOS Home on some models
+        _handleHome(e);
+        break;
+    }
+  }
+
+  function _handleSystemKey(e) {
+    var key = e.keyCode;
+    if (key === 36 || key === 172 || e.key === 'Home') {
+      _handleHome(e);
+    }
+  }
+
+  function _handleHome(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (window.App && App.getCurrentScreen && App.getCurrentScreen() !== 'profile-select') {
+      App.navigate('profile-select');
     }
   }
 

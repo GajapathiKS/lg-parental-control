@@ -592,16 +592,14 @@ html.viewport-scaled .modal-overlay {
   right: 58px;
   bottom: 50px;
   z-index: 6;
-  min-width: 142px;
+  min-width: 82px;
+  width: 82px;
   height: 82px;
-  padding: 0 28px;
+  padding: 0;
   color: rgba(255, 255, 255, 0.9);
   background: rgba(1, 2, 7, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: var(--radius);
-  font-size: 24px;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .screensaver-parent-button:focus {
@@ -623,6 +621,60 @@ html.viewport-scaled .modal-overlay {
   color: var(--text-secondary);
   font-size: 20px;
   text-transform: uppercase;
+}
+
+.slideshow-picker {
+  min-width: 820px;
+}
+
+.slideshow-folder-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.slideshow-folder {
+  min-height: 146px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  grid-template-rows: 1fr auto;
+  column-gap: 20px;
+  align-items: center;
+  color: var(--text-primary);
+  background: rgba(23, 32, 51, 0.84);
+  border: 1px solid rgba(100, 230, 255, 0.18);
+  border-radius: var(--radius);
+  text-align: left;
+}
+
+.slideshow-folder .icon-slideshow {
+  grid-row: span 2;
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.slideshow-folder span:not(.icon-slideshow) {
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.slideshow-folder small {
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
+.slideshow-folder:focus {
+  background: var(--accent);
+  color: #001018;
+  box-shadow: 0 0 0 4px rgba(100, 230, 255, 0.22);
+}
+
+.slideshow-folder:focus small {
+  color: rgba(0, 16, 24, 0.72);
 }
 
 .wheel-rim,

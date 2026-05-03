@@ -10,7 +10,8 @@ var Screensaver = (function () {
   var _stage = null;
   var _photoSlidesShown = 0;
 
-  function start(stage) {
+  function start(stage, options) {
+    options = options || {};
     stop();
     _stage = stage;
     _startClock();
@@ -20,7 +21,7 @@ var Screensaver = (function () {
       return;
     }
 
-    _loadPhotos(settings.screensaverManifest).then(function (photos) {
+    _loadPhotos(options.manifestPath || settings.screensaverManifest, options.folderId).then(function (photos) {
       _photos = photos;
       _index = 0;
       _photoSlidesShown = 0;
@@ -43,27 +44,76 @@ var Screensaver = (function () {
     _stage = null;
   }
 
-  function _loadPhotos(manifestPath) {
+  function _loadPhotos(manifestPath, folderId) {
     return fetch(manifestPath, { cache: 'no-store' })
       .then(function (response) {
         if (!response.ok) return [];
         return response.json();
       })
       .then(function (manifest) {
-        var basePath = manifest.basePath || 'assets/screensaver/';
-        return (manifest.photos || []).map(function (photo) {
-          if (typeof photo === 'string') {
-            return { src: basePath + photo, alt: '' };
-          }
+        var folder = _selectFolder(manifest, folderId);
+        return _mapPhotos(folder.photos || [], folder.basePath || manifest.basePath || 'assets/screensaver/');
+      })
+      .catch(function () {
+        return [];
+      });
+  }
+
+  function getFolders(manifestPath) {
+    return fetch(manifestPath || Storage.getSettings().screensaverManifest, { cache: 'no-store' })
+      .then(function (response) {
+        if (!response.ok) return [];
+        return response.json();
+      })
+      .then(function (manifest) {
+        return _normalizeFolders(manifest).map(function (folder) {
           return {
-            src: photo.src.indexOf('/') === -1 ? basePath + photo.src : photo.src,
-            alt: photo.alt || '',
+            id: folder.id,
+            name: folder.name,
+            count: (folder.photos || []).length,
           };
         });
       })
       .catch(function () {
         return [];
       });
+  }
+
+  function _selectFolder(manifest, folderId) {
+    var folders = _normalizeFolders(manifest);
+    if (!folders.length) return { id: 'default', name: 'Default', basePath: manifest.basePath, photos: [] };
+    for (var i = 0; i < folders.length; i++) {
+      if (folders[i].id === folderId) return folders[i];
+    }
+    return folders[0];
+  }
+
+  function _normalizeFolders(manifest) {
+    if (manifest.folders && manifest.folders.length) return manifest.folders;
+    return [{
+      id: 'default',
+      name: 'Default',
+      basePath: manifest.basePath || 'assets/screensaver/',
+      photos: manifest.photos || [],
+    }];
+  }
+
+  function _mapPhotos(photos, basePath) {
+    return photos.map(function (photo) {
+      if (typeof photo === 'string') {
+        return { src: _resolveSrc(photo, basePath), alt: '' };
+      }
+      return {
+        src: _resolveSrc(photo.src || '', basePath),
+        alt: photo.alt || '',
+      };
+    });
+  }
+
+  function _resolveSrc(src, basePath) {
+    if (!src) return '';
+    if (/^(https?:|data:|assets\/|\/)/.test(src)) return src;
+    return basePath + src;
   }
 
   function _renderCurrent() {
@@ -179,6 +229,7 @@ var Screensaver = (function () {
   }
 
   return {
+    getFolders: getFolders,
     start: start,
     stop: stop,
   };

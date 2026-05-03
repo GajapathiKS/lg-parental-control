@@ -4,14 +4,14 @@
 var Components = (function () {
 
   var AVATARS = [
-    { id: 'bear', label: 'BE', name: 'Bear' },
-    { id: 'rocket', label: 'RK', name: 'Rocket' },
-    { id: 'star', label: 'ST', name: 'Star' },
-    { id: 'dino', label: 'DN', name: 'Dino' },
-    { id: 'rainbow', label: 'RB', name: 'Rainbow' },
-    { id: 'robot', label: 'RO', name: 'Robot' },
-    { id: 'cat', label: 'CT', name: 'Cat' },
-    { id: 'fish', label: 'FS', name: 'Fish' },
+    { id: 'bear', label: 'Bear', name: 'Bear' },
+    { id: 'rocket', label: 'Rocket', name: 'Rocket' },
+    { id: 'star', label: 'Star', name: 'Star' },
+    { id: 'dino', label: 'Dino', name: 'Dino' },
+    { id: 'rainbow', label: 'Rainbow', name: 'Rainbow' },
+    { id: 'robot', label: 'Robot', name: 'Robot' },
+    { id: 'cat', label: 'Cat', name: 'Cat' },
+    { id: 'fish', label: 'Fish', name: 'Fish' },
   ];
 
   function getAvatarEmoji(id, fallbackName) {
@@ -24,6 +24,14 @@ var Components = (function () {
     }
     if (fallbackName) return _initials(fallbackName);
     return 'CR';
+  }
+
+  function renderAvatarIcon(id, fallbackName) {
+    var knownId = _knownAvatarId(id);
+    if (knownId === 'crew') {
+      return '<span class="avatar-initials">' + _escapeHtml(_initials(fallbackName)) + '</span>';
+    }
+    return '<span class="avatar-icon avatar-icon-' + knownId + '"></span>';
   }
 
   function renderNumpad(keys) {
@@ -85,7 +93,7 @@ var Components = (function () {
     var remaining = status ? status.minutesRemaining : profile.dailyLimitMinutes;
     var avatarId = profile.avatar || 'crew';
     var html = '<div class="profile-card focusable" tabindex="0" data-profile-id="' + profile.id + '">' +
-      '<div class="profile-avatar avatar-' + _escapeHtml(_knownAvatarId(avatarId)) + '">' + getAvatarLabel(avatarId, profile.name) + '</div>' +
+      '<div class="profile-avatar avatar-' + _escapeHtml(_knownAvatarId(avatarId)) + '">' + renderAvatarIcon(avatarId, profile.name) + '</div>' +
       '<div class="profile-name">' + _escapeHtml(profile.name) + '</div>' +
       '<div class="profile-limit">' + remaining + ' min left today</div>' +
       '</div>';
@@ -127,7 +135,7 @@ var Components = (function () {
     AVATARS.forEach(function (av) {
       var cls = 'avatar-option focusable' + (av.id === selectedId ? ' selected' : '');
       html += '<button class="' + cls + ' avatar-' + av.id + '" data-avatar="' + av.id + '" tabindex="0">' +
-        '<span>' + av.label + '</span><small>' + av.name + '</small></button>';
+        renderAvatarIcon(av.id) + '<small>' + av.name + '</small></button>';
     });
     html += '</div>';
     return html;
@@ -157,6 +165,7 @@ var Components = (function () {
     AVATARS: AVATARS,
     getAvatarEmoji: getAvatarEmoji,
     getAvatarLabel: getAvatarLabel,
+    renderAvatarIcon: renderAvatarIcon,
     renderNumpad: renderNumpad,
     getRandomizedNumpadKeys: getRandomizedNumpadKeys,
     attachNumpadListeners: attachNumpadListeners,

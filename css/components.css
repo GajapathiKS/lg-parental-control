@@ -40,6 +40,139 @@
   min-width: 300px;
 }
 
+.icon-nav {
+  position: absolute;
+  top: 48px;
+  width: 82px;
+  height: 82px;
+  min-width: 82px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(1, 2, 7, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+.icon-nav.inline {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  flex: 0 0 82px;
+}
+
+.icon-nav-left { left: 52px; }
+.icon-nav-right { right: 52px; }
+
+.icon-nav span,
+.screensaver-parent-button span,
+.lock-icon {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 42px;
+}
+
+.icon-back::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  border-left: 5px solid currentColor;
+  border-bottom: 5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.icon-back::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 19px;
+  width: 26px;
+  height: 5px;
+  border-radius: 5px;
+  background: currentColor;
+}
+
+.icon-home::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 18px;
+  width: 26px;
+  height: 20px;
+  border: 4px solid currentColor;
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.icon-home::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  width: 25px;
+  height: 25px;
+  border-left: 4px solid currentColor;
+  border-top: 4px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.icon-lock::before,
+.lock-icon::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 19px;
+  width: 26px;
+  height: 21px;
+  border-radius: 5px;
+  background: currentColor;
+}
+
+.icon-lock::after,
+.lock-icon::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 5px;
+  width: 16px;
+  height: 20px;
+  border: 5px solid currentColor;
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+}
+
+.lock-icon {
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.icon-slideshow::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  width: 30px;
+  height: 22px;
+  border: 4px solid currentColor;
+  border-radius: 5px;
+  box-shadow: 7px 7px 0 -2px rgba(255, 255, 255, 0.55);
+}
+
+.icon-slideshow::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 17px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 /* Number Pad (for PIN entry) */
 .numpad {
   display: grid;
@@ -128,6 +261,173 @@
   font-size: 42px;
   font-weight: 900;
   text-shadow: 0 3px 18px rgba(0, 0, 0, 0.72);
+}
+
+.profile-avatar.small {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+}
+
+.profile-avatar.small .avatar-icon {
+  width: 44px;
+  height: 44px;
+  transform: scale(0.62);
+}
+
+.profile-avatar.small .avatar-initials {
+  font-size: 26px;
+}
+
+.avatar-icon {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+
+.avatar-initials {
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.avatar-icon::before,
+.avatar-icon::after {
+  content: "";
+  position: absolute;
+  display: block;
+}
+
+.avatar-icon-bear::before {
+  left: 13px;
+  top: 20px;
+  width: 46px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffd0a6;
+  box-shadow: -13px -11px 0 -2px #b96a3f, 13px -11px 0 -2px #b96a3f;
+}
+.avatar-icon-bear::after {
+  left: 26px;
+  top: 35px;
+  width: 20px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3a1710;
+  box-shadow: -10px -8px 0 -5px #3a1710, 10px -8px 0 -5px #3a1710;
+}
+
+.avatar-icon-rocket::before {
+  left: 28px;
+  top: 6px;
+  width: 18px;
+  height: 48px;
+  border-radius: 50% 50% 8px 8px;
+  background: #f4fbff;
+  box-shadow: inset 0 16px 0 #e50922;
+  transform: rotate(28deg);
+}
+.avatar-icon-rocket::after {
+  left: 20px;
+  top: 48px;
+  width: 30px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd166;
+  transform: rotate(28deg);
+}
+
+.avatar-icon-star::before {
+  left: 9px;
+  top: 9px;
+  width: 54px;
+  height: 54px;
+  background: #ffd166;
+  clip-path: polygon(50% 0%, 61% 34%, 97% 34%, 68% 54%, 79% 90%, 50% 68%, 21% 90%, 32% 54%, 3% 34%, 39% 34%);
+}
+
+.avatar-icon-dino::before {
+  left: 10px;
+  top: 28px;
+  width: 48px;
+  height: 28px;
+  border-radius: 22px 24px 18px 18px;
+  background: #72f2a6;
+  box-shadow: 35px -18px 0 -8px #72f2a6, -6px 18px 0 -9px #72f2a6, 22px 18px 0 -9px #72f2a6;
+}
+.avatar-icon-dino::after {
+  left: 45px;
+  top: 21px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #071910;
+}
+
+.avatar-icon-rainbow::before {
+  left: 7px;
+  top: 17px;
+  width: 58px;
+  height: 32px;
+  border: 9px solid #e50922;
+  border-bottom: 0;
+  border-radius: 58px 58px 0 0;
+  box-shadow: inset 0 8px 0 #ffd166, inset 0 17px 0 #64e6ff;
+}
+
+.avatar-icon-robot::before {
+  left: 15px;
+  top: 18px;
+  width: 42px;
+  height: 36px;
+  border-radius: 8px;
+  background: #d9e6f2;
+  box-shadow: 0 -10px 0 -7px #64e6ff;
+}
+.avatar-icon-robot::after {
+  left: 25px;
+  top: 33px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #111923;
+  box-shadow: 16px 0 0 #111923, 8px 12px 0 -2px #e50922;
+}
+
+.avatar-icon-cat::before {
+  left: 13px;
+  top: 20px;
+  width: 46px;
+  height: 40px;
+  border-radius: 45% 45% 50% 50%;
+  background: #ffd1a6;
+  clip-path: polygon(0 22%, 18% 0, 34% 21%, 66% 21%, 82% 0, 100% 22%, 100% 100%, 0 100%);
+}
+.avatar-icon-cat::after {
+  left: 26px;
+  top: 39px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #241208;
+  box-shadow: 16px 0 0 #241208, 8px 12px 0 -2px #e50922;
+}
+
+.avatar-icon-fish::before {
+  left: 12px;
+  top: 27px;
+  width: 44px;
+  height: 28px;
+  border-radius: 50%;
+  background: #64e6ff;
+}
+.avatar-icon-fish::after {
+  left: 49px;
+  top: 30px;
+  width: 20px;
+  height: 22px;
+  background: #168aaa;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
 .avatar-bear { background: radial-gradient(circle at 32% 24%, #ffe6c7 0, #b86c3c 36%, #2b1212 100%); }

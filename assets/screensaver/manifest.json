@@ -1,5 +1,37 @@
 {
   "basePath": "assets/screensaver/",
+  "folders": [
+    {
+      "id": "space-dreams",
+      "name": "Space Dreams",
+      "basePath": "assets/screensaver/",
+      "photos": [
+        { "src": "space-01.png", "alt": "Child astronaut in orbit" },
+        { "src": "space-02.png", "alt": "Earth orbit hero" },
+        { "src": "space-03.png", "alt": "Astronaut in observation module" },
+        { "src": "space-04.png", "alt": "Astronaut spacewalk" },
+        { "src": "space-05.png", "alt": "Solar system mission path" },
+        { "src": "space-06.png", "alt": "Moon landing site" },
+        { "src": "space-07.png", "alt": "Mars rover landscape" },
+        { "src": "space-08.png", "alt": "Deep space nebula" },
+        { "src": "space-09.png", "alt": "Space exploration scene" }
+      ]
+    },
+    {
+      "id": "mission-deck",
+      "name": "Mission Deck",
+      "basePath": "assets/space/",
+      "photos": [
+        { "src": "earth-hero.png", "alt": "Earth from orbit" },
+        { "src": "mars-bg.png", "alt": "Mars landscape" },
+        { "src": "moon-bg.png", "alt": "Moon surface" },
+        { "src": "nebula-bg.png", "alt": "Nebula field" },
+        { "src": "orbit-station-bg.png", "alt": "Orbital station" },
+        { "src": "solar-system-bg.png", "alt": "Solar system" },
+        { "src": "spacewalk-bg.png", "alt": "Spacewalk" }
+      ]
+    }
+  ],
   "photos": [
     { "src": "space-01.png", "alt": "Child astronaut in orbit" },
     { "src": "space-02.png", "alt": "Earth orbit hero" },

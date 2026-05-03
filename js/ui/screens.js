@@ -1,5 +1,5 @@
 /**
- * Screens Module — renders each screen into #screen-container
+ * Screens Module - renders each screen into #screen-container
  */
 var Screens = (function () {
   var _container = null;
@@ -13,7 +13,7 @@ var Screens = (function () {
     Navigation.focusFirst(_container);
   }
 
-  // ─── WELCOME / SETUP ─────────────────────────────
+  // - WELCOME / SETUP -
 
   function showWelcome() {
     _render(
@@ -29,6 +29,7 @@ var Screens = (function () {
           '<div class="row" style="margin-top: 34px;">' +
             '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-setup">Launch Setup</button>' +
             '<button class="btn btn-ghost btn-large focusable" tabindex="0" id="btn-preview-lock">Preview Clock</button>' +
+            '<button class="icon-nav inline focusable" tabindex="0" id="btn-welcome-slideshow" aria-label="Slideshow"><span class="icon-slideshow"></span></button>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -39,15 +40,20 @@ var Screens = (function () {
     document.getElementById('btn-preview-lock').addEventListener('click', function () {
       Lockscreen.showLockscreen('Preview');
     });
+    document.getElementById('btn-welcome-slideshow').addEventListener('click', function () {
+      Lockscreen.showScreensaverPicker();
+    });
   }
 
   function showSetupPin(isChange) {
     var title = isChange ? 'Change Your PIN' : 'Set a Parent PIN';
     var subtitle = isChange ? 'Enter your new 4-6 digit PIN' : 'This PIN protects your settings. Kids won\'t be able to change limits.';
     var pinDigits = [];
+    var backTarget = isChange ? 'parent-dashboard' : 'welcome';
 
     _render(
       '<div class="screen setup-screen center">' +
+        '<button class="icon-nav icon-nav-left focusable" tabindex="0" id="btn-setup-back" aria-label="Back"><span class="icon-back"></span></button>' +
         '<div class="col" style="align-items: center;">' +
           '<div class="title">' + title + '</div>' +
           '<div class="subtitle" style="text-align: center;">' + subtitle + '</div>' +
@@ -80,13 +86,21 @@ var Screens = (function () {
         showConfirmPin(pin, isChange);
       }
     );
+
+    document.getElementById('btn-setup-back').addEventListener('click', function () {
+      App.navigate(backTarget);
+    });
+    Navigation.onBack(function () { App.navigate(backTarget); });
   }
 
   function showConfirmPin(firstPin, isChange) {
     var pinDigits = [];
+    var backTarget = isChange ? 'parent-dashboard' : 'setup-pin';
+    var backParams = isChange ? {} : { isChange: false };
 
     _render(
       '<div class="screen setup-screen center">' +
+        '<button class="icon-nav icon-nav-left focusable" tabindex="0" id="btn-confirm-back" aria-label="Back"><span class="icon-back"></span></button>' +
         '<div class="col" style="align-items: center;">' +
           '<div class="title">Confirm Your PIN</div>' +
           '<div class="subtitle">Enter the same PIN again</div>' +
@@ -125,9 +139,14 @@ var Screens = (function () {
         }
       }
     );
+
+    document.getElementById('btn-confirm-back').addEventListener('click', function () {
+      App.navigate(backTarget, backParams);
+    });
+    Navigation.onBack(function () { App.navigate(backTarget, backParams); });
   }
 
-  // ─── PROFILE CREATION ────────────────────────────
+  // - PROFILE CREATION -
 
   function showCreateProfile() {
     var selectedAvatar = 'bear';
@@ -137,8 +156,11 @@ var Screens = (function () {
 
     _render(
       '<div class="screen create-profile-screen">' +
-        '<div class="title">Create a Child Profile</div>' +
-        '<div class="subtitle">Who will be using this TV?</div>' +
+        '<div class="row">' +
+          '<div><div class="title">Create a Child Profile</div><div class="subtitle">Who will be using this TV?</div></div>' +
+          '<div class="spacer"></div>' +
+          '<button class="btn focusable" tabindex="0" id="btn-cancel-profile">Back</button>' +
+        '</div>' +
         '<div class="row" style="gap: 48px; margin-top: 24px;">' +
           '<div class="col" style="flex: 1;">' +
             '<div class="label">Name</div>' +
@@ -148,7 +170,7 @@ var Screens = (function () {
               'placeholder="Child\'s name" maxlength="20">' +
             '<div class="label" style="margin-top: 24px;">Daily Limit</div>' +
             '<div class="row">' +
-              '<button class="btn focusable" tabindex="0" id="limit-down">−</button>' +
+              '<button class="btn focusable" tabindex="0" id="limit-down">-</button>' +
               '<div id="limit-display" style="font-size: 40px; min-width: 150px; text-align: center;">' + limit + ' min</div>' +
               '<button class="btn focusable" tabindex="0" id="limit-up">+</button>' +
             '</div>' +
@@ -170,11 +192,12 @@ var Screens = (function () {
     );
 
     // Avatar selection
-    _container.querySelectorAll('.avatar-option').forEach(function (el) {
-      el.addEventListener('click', function () {
-        selectedAvatar = this.getAttribute('data-avatar');
+    document.getElementById('avatar-grid').addEventListener('click', function (event) {
+      var button = event.target.closest('.avatar-option');
+      if (button) {
+        selectedAvatar = button.getAttribute('data-avatar');
         document.getElementById('avatar-grid').innerHTML = Components.renderAvatarGrid(selectedAvatar);
-      });
+      }
     });
 
     // Limit controls
@@ -185,6 +208,9 @@ var Screens = (function () {
     document.getElementById('limit-up').addEventListener('click', function () {
       limit = Math.min(480, limit + 15);
       document.getElementById('limit-display').textContent = limit + ' min';
+    });
+    document.getElementById('btn-cancel-profile').addEventListener('click', function () {
+      _cancelCreateProfile();
     });
 
     // Save
@@ -216,9 +242,19 @@ var Screens = (function () {
       }
       App.navigate('profile-select');
     });
+
+    Navigation.onBack(_cancelCreateProfile);
   }
 
-  // ─── PROFILE SELECTION (Home Screen) ─────────────
+  function _cancelCreateProfile() {
+    if (Storage.isSetupComplete()) {
+      App.navigate('profile-select');
+    } else {
+      App.navigate('welcome');
+    }
+  }
+
+  // - PROFILE SELECTION (Home Screen) -
 
   function showProfileSelect() {
     var profiles = Storage.getProfiles();
@@ -244,6 +280,7 @@ var Screens = (function () {
     html += '</div>' +
       '<div class="row mission-actions">' +
         '<div class="spacer"></div>' +
+        '<button class="icon-nav inline focusable" tabindex="0" id="btn-slideshow" aria-label="Slideshow"><span class="icon-slideshow"></span></button>' +
         '<button class="btn focusable" tabindex="0" id="btn-parent-access">Parent Settings</button>' +
       '</div>' +
       '</div>';
@@ -267,13 +304,16 @@ var Screens = (function () {
     }
 
     // Parent settings
+    document.getElementById('btn-slideshow').addEventListener('click', function () {
+      Lockscreen.showScreensaverPicker();
+    });
     document.getElementById('btn-parent-access').addEventListener('click', function () {
       App.navigate('pin-entry', { next: 'parent-dashboard' });
     });
     Navigation.clearBack();
   }
 
-  // ─── CHILD DASHBOARD ─────────────────────────────
+  // - CHILD DASHBOARD -
 
   function showChildDashboard(params) {
     var status = Timer.getStatus(params.profileId);
@@ -286,7 +326,7 @@ var Screens = (function () {
     _render(
       '<div class="screen child-screen">' +
         '<div class="row">' +
-          '<div class="profile-avatar">' + Components.getAvatarLabel(profile.avatar, profile.name) + '</div>' +
+          '<div class="profile-avatar avatar-' + _escapeHtml(profile.avatar || 'crew') + '">' + Components.renderAvatarIcon(profile.avatar, profile.name) + '</div>' +
           '<div class="col" style="gap: 4px;">' +
             '<div class="title" style="margin: 0;">Hi, ' + profile.name + '!</div>' +
             '<div class="subtitle" style="margin: 0;">Here\'s your screen time for today</div>' +
@@ -377,6 +417,8 @@ var Screens = (function () {
 
     _render(
       '<div class="screen code-screen center">' +
+        '<button class="icon-nav icon-nav-left focusable" tabindex="0" id="btn-code-back" aria-label="Back"><span class="icon-back"></span></button>' +
+        '<button class="icon-nav icon-nav-right focusable" tabindex="0" id="btn-code-home" aria-label="Home"><span class="icon-home"></span></button>' +
         '<div class="col" style="align-items: center;">' +
           '<div class="mission-kicker red">Launch code</div>' +
           '<div class="title">Enter ' + _escapeHtml(profile.name) + '\'s Code</div>' +
@@ -412,18 +454,26 @@ var Screens = (function () {
       }
     );
 
+    document.getElementById('btn-code-back').addEventListener('click', function () {
+      App.navigate('child-dashboard', { profileId: params.profileId });
+    });
+    document.getElementById('btn-code-home').addEventListener('click', function () {
+      App.navigate('profile-select');
+    });
     Navigation.onBack(function () { App.navigate('child-dashboard', { profileId: params.profileId }); });
   }
 
-  // ─── PIN ENTRY (reusable) ────────────────────────
+  // - PIN ENTRY (reusable) -
 
   function showPinEntry(params) {
     var pinDigits = [];
 
     _render(
       '<div class="screen parent-pin-screen center">' +
+        '<button class="icon-nav icon-nav-left focusable" tabindex="0" id="btn-pin-back" aria-label="Back"><span class="icon-back"></span></button>' +
+        '<button class="icon-nav icon-nav-right focusable" tabindex="0" id="btn-pin-home" aria-label="Home"><span class="icon-home"></span></button>' +
         '<div class="col" style="align-items: center;">' +
-          '<div style="font-size: 64px;">🔒</div>' +
+          '<div class="lock-icon" aria-hidden="true"></div>' +
           '<div class="title">Enter Parent PIN</div>' +
           '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
           '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
@@ -463,10 +513,12 @@ var Screens = (function () {
       }
     );
 
+    document.getElementById('btn-pin-back').addEventListener('click', function () { App.navigate('profile-select'); });
+    document.getElementById('btn-pin-home').addEventListener('click', function () { App.navigate('profile-select'); });
     Navigation.onBack(function () { App.navigate('profile-select'); });
   }
 
-  // ─── PARENT DASHBOARD ────────────────────────────
+  // - PARENT DASHBOARD -
 
   function showParentDashboard() {
     var profiles = Storage.getProfiles();
@@ -474,7 +526,7 @@ var Screens = (function () {
       '<div class="row">' +
         '<div class="title">Parent Dashboard</div>' +
         '<div class="spacer"></div>' +
-        '<button class="btn focusable" tabindex="0" id="btn-back-home">← Back</button>' +
+        '<button class="icon-nav inline focusable" tabindex="0" id="btn-back-home" aria-label="Home"><span class="icon-home"></span></button>' +
       '</div>' +
       '<div class="subtitle">Today\'s screen time summary</div>';
 
@@ -484,7 +536,7 @@ var Screens = (function () {
       var status = Timer.getStatus(p.id);
       html += '<div class="card" style="min-width: 350px;">' +
         '<div class="row" style="margin-bottom: 16px;">' +
-          '<div style="font-size: 48px;">' + Components.getAvatarEmoji(p.avatar) + '</div>' +
+          '<div class="profile-avatar small avatar-' + _escapeHtml(p.avatar || 'crew') + '">' + Components.renderAvatarIcon(p.avatar, p.name) + '</div>' +
           '<div class="col" style="gap: 2px;">' +
             '<div style="font-size: 28px; font-weight: 600;">' + _escapeHtml(p.name) + '</div>' +
             '<div style="color: var(--text-muted);">' + status.minutesUsed + ' / ' + status.limitMinutes + ' min</div>' +
@@ -498,7 +550,7 @@ var Screens = (function () {
 
     // Weekly chart for first profile
     if (profiles.length > 0) {
-      html += '<div class="label">Weekly Usage — ' + profiles[0].name + '</div>' +
+      html += '<div class="label">Weekly Usage - ' + profiles[0].name + '</div>' +
         Components.renderWeeklyChart(profiles[0].id, profiles[0].dailyLimitMinutes);
     }
 
@@ -689,7 +741,7 @@ var Screens = (function () {
     }
   }
 
-  // ─── SETTINGS ────────────────────────────────────
+  // - SETTINGS -
 
   function showSettings() {
     var settings = Storage.getSettings();
@@ -704,14 +756,14 @@ var Screens = (function () {
         '<div class="row">' +
           '<div class="title">Settings</div>' +
           '<div class="spacer"></div>' +
-          '<button class="btn focusable" tabindex="0" id="btn-back">← Back</button>' +
+          '<button class="btn focusable" tabindex="0" id="btn-back">Back</button>' +
         '</div>' +
         '<div class="col" style="gap: 32px; margin-top: 32px;">' +
           '<div class="card row">' +
             '<div class="col" style="flex: 1;"><div style="font-weight: 600;">Warning before limit</div>' +
             '<div style="color: var(--text-muted);">Show a warning X minutes before time runs out</div></div>' +
             '<div class="row">' +
-              '<button class="btn focusable" tabindex="0" id="warn-down">−</button>' +
+              '<button class="btn focusable" tabindex="0" id="warn-down">-</button>' +
               '<div id="warn-val" style="min-width: 80px; text-align: center; font-size: 32px;">' + settings.warningBeforeMinutes + '</div>' +
               '<button class="btn focusable" tabindex="0" id="warn-up">+</button>' +
             '</div>' +
@@ -720,7 +772,7 @@ var Screens = (function () {
             '<div class="col" style="flex: 1;"><div style="font-weight: 600;">Extension amount</div>' +
             '<div style="color: var(--text-muted);">How many minutes to add when parent extends</div></div>' +
             '<div class="row">' +
-              '<button class="btn focusable" tabindex="0" id="ext-down">−</button>' +
+              '<button class="btn focusable" tabindex="0" id="ext-down">-</button>' +
               '<div id="ext-val" style="min-width: 80px; text-align: center; font-size: 32px;">' + settings.extensionMinutes + '</div>' +
               '<button class="btn focusable" tabindex="0" id="ext-up">+</button>' +
             '</div>' +
