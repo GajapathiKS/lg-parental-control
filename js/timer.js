@@ -38,6 +38,50 @@ var Timer = (function () {
     _interval = setInterval(_tick, TICK_MS);
   }
 
+  function reconcileStoredSession() {
+    var session = Storage.getActiveSession();
+    if (!session || !session.profileId || !session.startTime) return null;
+
+    var start = new Date(session.startTime);
+    if (isNaN(start.getTime())) {
+      Storage.clearActiveSession();
+      return null;
+    }
+
+    var now = new Date();
+    if (_dateKey(start) !== _dateKey(now)) {
+      Storage.clearActiveSession();
+      return null;
+    }
+
+    var elapsedMinutes = Math.max(0, Math.floor((now - start) / 60000));
+    var totalMinutes = (session.accumulatedMinutes || 0) + elapsedMinutes;
+    var profile = _getProfile(session.profileId);
+    if (!profile) {
+      Storage.clearActiveSession();
+      return null;
+    }
+
+    Storage.updateTodayUsage(session.profileId, totalMinutes);
+    if (totalMinutes >= profile.dailyLimitMinutes) {
+      Storage.clearActiveSession();
+      return {
+        profileId: session.profileId,
+        profileName: profile.name,
+        limitReached: true,
+        minutesUsed: totalMinutes,
+      };
+    }
+
+    return {
+      profileId: session.profileId,
+      profileName: profile.name,
+      limitReached: false,
+      minutesUsed: totalMinutes,
+      minutesRemaining: profile.dailyLimitMinutes - totalMinutes,
+    };
+  }
+
   function _tick() {
     if (!_profileId) return;
 
@@ -55,11 +99,7 @@ var Timer = (function () {
     Storage.updateTodayUsage(_profileId, totalMinutes);
 
     // Get profile limit
-    var profiles = Storage.getProfiles();
-    var profile = null;
-    for (var i = 0; i < profiles.length; i++) {
-      if (profiles[i].id === _profileId) { profile = profiles[i]; break; }
-    }
+    var profile = _getProfile(_profileId);
     if (!profile) return;
 
     var remaining = profile.dailyLimitMinutes - totalMinutes;
@@ -207,6 +247,20 @@ var Timer = (function () {
            String(date.getMinutes()).padStart(2, '0');
   }
 
+  function _dateKey(date) {
+    return date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getDate()).padStart(2, '0');
+  }
+
+  function _getProfile(profileId) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) return profiles[i];
+    }
+    return null;
+  }
+
   function _checkMilestones(settings, profile, sessionMinutes) {
     var milestones = settings.warningMilestones || [20, 40, 59];
     var fired = false;
@@ -251,6 +305,7 @@ var Timer = (function () {
 
   return {
     start: start,
+    reconcileStoredSession: reconcileStoredSession,
     stop: stop,
     extendTime: extendTime,
     getStatus: getStatus,

@@ -43,14 +43,18 @@
 .icon-nav {
   position: absolute;
   top: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 82px;
   height: 82px;
   min-width: 82px;
   padding: 0;
-  border-radius: 50%;
-  background: rgba(1, 2, 7, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(1, 2, 7, 0.72);
+  border: 2px solid rgba(255, 255, 255, 0.22);
   color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(100, 230, 255, 0.05);
 }
 
 .icon-nav.inline {
@@ -59,6 +63,14 @@
   right: auto;
   left: auto;
   flex: 0 0 82px;
+}
+
+.icon-nav:focus {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(229, 9, 34, 0.22), 0 0 28px rgba(229, 9, 34, 0.36);
 }
 
 .icon-nav-left { left: 52px; }
@@ -504,4 +516,190 @@
 .chart-value {
   font-size: 20px;
   color: var(--text-secondary);
+}
+
+/* NASA/Netflix profile icon refresh */
+.profile-card {
+  background: linear-gradient(180deg, rgba(8, 10, 16, 0.94), rgba(2, 3, 7, 0.94));
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.profile-card:focus {
+  box-shadow: 0 0 0 3px var(--accent), 0 0 42px rgba(229, 9, 34, 0.34);
+}
+
+.profile-avatar {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.08), transparent 38%),
+    linear-gradient(180deg, #07080d 0%, #010207 100%);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(100, 230, 255, 0.06), 0 18px 40px rgba(0, 0, 0, 0.46);
+  text-shadow: none;
+}
+
+.profile-card:focus .profile-avatar,
+.avatar-option.selected,
+.avatar-option:focus {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 28px rgba(229, 9, 34, 0.42);
+}
+
+.avatar-icon::before,
+.avatar-icon::after {
+  box-shadow: none;
+}
+
+.avatar-icon-bear::before {
+  left: 13px;
+  top: 18px;
+  width: 46px;
+  height: 38px;
+  border: 5px solid #64e6ff;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: -13px -12px 0 -7px #64e6ff, 13px -12px 0 -7px #64e6ff;
+}
+.avatar-icon-bear::after {
+  left: 27px;
+  top: 35px;
+  width: 18px;
+  height: 12px;
+  border: 4px solid #ff293d;
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+  background: transparent;
+  box-shadow: -12px -9px 0 -5px #fbf7ef, 12px -9px 0 -5px #fbf7ef;
+}
+
+.avatar-icon-rocket::before {
+  left: 27px;
+  top: 7px;
+  width: 20px;
+  height: 49px;
+  border: 4px solid #fbf7ef;
+  border-radius: 50% 50% 10px 10px;
+  background: linear-gradient(180deg, #e50922 0 30%, transparent 30% 100%);
+  transform: rotate(28deg);
+}
+.avatar-icon-rocket::after {
+  left: 18px;
+  top: 47px;
+  width: 32px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffd166;
+  transform: rotate(28deg);
+  filter: drop-shadow(0 0 12px rgba(255, 209, 102, 0.42));
+}
+
+.avatar-icon-star::before {
+  left: 8px;
+  top: 8px;
+  width: 56px;
+  height: 56px;
+  background: #ffd166;
+  clip-path: polygon(50% 0%, 61% 34%, 97% 34%, 68% 54%, 79% 90%, 50% 68%, 21% 90%, 32% 54%, 3% 34%, 39% 34%);
+  filter: drop-shadow(0 0 14px rgba(255, 209, 102, 0.36));
+}
+
+.avatar-icon-dino::before {
+  left: 8px;
+  top: 26px;
+  width: 48px;
+  height: 28px;
+  border: 5px solid #72f2a6;
+  border-radius: 22px 24px 18px 18px;
+  background: transparent;
+  box-shadow: 35px -18px 0 -11px #72f2a6;
+}
+.avatar-icon-dino::after {
+  left: 46px;
+  top: 23px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbf7ef;
+}
+
+.avatar-icon-rainbow::before {
+  left: 6px;
+  top: 18px;
+  width: 60px;
+  height: 32px;
+  border: 7px solid #e50922;
+  border-bottom: 0;
+  border-radius: 60px 60px 0 0;
+  background: transparent;
+  box-shadow: inset 0 7px 0 #ffd166, inset 0 15px 0 #64e6ff;
+}
+
+.avatar-icon-robot::before {
+  left: 14px;
+  top: 18px;
+  width: 44px;
+  height: 38px;
+  border: 5px solid #64e6ff;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: 0 -11px 0 -8px #64e6ff;
+}
+.avatar-icon-robot::after {
+  left: 25px;
+  top: 33px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fbf7ef;
+  box-shadow: 16px 0 0 #fbf7ef, 8px 13px 0 -2px #e50922;
+}
+
+.avatar-icon-cat::before {
+  left: 13px;
+  top: 18px;
+  width: 46px;
+  height: 42px;
+  border: 5px solid #ff9f58;
+  border-radius: 45% 45% 50% 50%;
+  background: transparent;
+  clip-path: polygon(0 22%, 18% 0, 34% 21%, 66% 21%, 82% 0, 100% 22%, 100% 100%, 0 100%);
+}
+.avatar-icon-cat::after {
+  left: 26px;
+  top: 39px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fbf7ef;
+  box-shadow: 16px 0 0 #fbf7ef, 8px 13px 0 -2px #e50922;
+}
+
+.avatar-icon-fish::before {
+  left: 10px;
+  top: 27px;
+  width: 46px;
+  height: 28px;
+  border: 5px solid #64e6ff;
+  border-radius: 50%;
+  background: transparent;
+}
+.avatar-icon-fish::after {
+  left: 49px;
+  top: 30px;
+  width: 21px;
+  height: 22px;
+  background: #64e6ff;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.avatar-bear,
+.avatar-rocket,
+.avatar-star,
+.avatar-dino,
+.avatar-rainbow,
+.avatar-robot,
+.avatar-cat,
+.avatar-fish {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.08), transparent 38%),
+    linear-gradient(180deg, #07080d 0%, #010207 100%);
 }

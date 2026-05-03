@@ -15,12 +15,18 @@ var App = (function () {
 
     Storage.purgeOldLogs();
     Storage.ensureDefaultBedtimeRule();
-    Storage.clearActiveSession();
+    var reconciledSession = Timer.reconcileStoredSession();
 
     if (!Storage.isSetupComplete()) {
       navigate('welcome');
     } else {
       navigate('profile-select');
+    }
+
+    if (reconciledSession && reconciledSession.limitReached) {
+      setTimeout(function () {
+        Lockscreen.showLockscreen(reconciledSession.profileName);
+      }, 150);
     }
   }
 

@@ -3,6 +3,20 @@
  * Images are listed in assets/screensaver/manifest.json.
  */
 var Screensaver = (function () {
+  var DEFAULT_FOLDERS = [
+    {
+      id: 'space-dreams',
+      name: 'Space Dreams',
+      basePath: 'assets/screensaver/',
+      photos: ['space-01.png', 'space-02.png', 'space-03.png', 'space-04.png', 'space-05.png', 'space-06.png', 'space-07.png', 'space-08.png', 'space-09.png'],
+    },
+    {
+      id: 'mission-deck',
+      name: 'Mission Deck',
+      basePath: 'assets/space/',
+      photos: ['earth-hero.png', 'mars-bg.png', 'moon-bg.png', 'nebula-bg.png', 'orbit-station-bg.png', 'solar-system-bg.png', 'spacewalk-bg.png'],
+    },
+  ];
   var _photos = [];
   var _index = 0;
   var _interval = null;
@@ -55,7 +69,8 @@ var Screensaver = (function () {
         return _mapPhotos(folder.photos || [], folder.basePath || manifest.basePath || 'assets/screensaver/');
       })
       .catch(function () {
-        return [];
+        var folder = _selectFolder({ folders: DEFAULT_FOLDERS }, folderId);
+        return _mapPhotos(folder.photos || [], folder.basePath || 'assets/screensaver/');
       });
   }
 
@@ -75,7 +90,13 @@ var Screensaver = (function () {
         });
       })
       .catch(function () {
-        return [];
+        return DEFAULT_FOLDERS.map(function (folder) {
+          return {
+            id: folder.id,
+            name: folder.name,
+            count: (folder.photos || []).length,
+          };
+        });
       });
   }
 
@@ -131,6 +152,7 @@ var Screensaver = (function () {
         '<img class="screensaver-photo-main" src="' + _escapeAttr(photo.src) + '" alt="' + _escapeAttr(photo.alt) + '">' +
       '</div>' +
       _renderMiniClock();
+    _wirePhotoFallbacks();
     _updateClock();
   }
 
@@ -168,7 +190,23 @@ var Screensaver = (function () {
           : '<div class="screensaver-fallback"></div>') +
       '</div>' +
       _renderGiantClock();
+    _wirePhotoFallbacks();
     _updateClock();
+  }
+
+  function _wirePhotoFallbacks() {
+    if (!_stage) return;
+    var imgs = _stage.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].onerror = function () {
+        this.onerror = null;
+        if (_photos.length > 1) {
+          setTimeout(_advance, 250);
+        } else {
+          _renderFallback();
+        }
+      };
+    }
   }
 
   function _renderMiniClock() {

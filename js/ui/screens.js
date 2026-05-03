@@ -408,6 +408,21 @@ var Screens = (function () {
       },
     });
     App.navigate('child-dashboard', { profileId: profileId });
+    setTimeout(_sendAppToTv, 700);
+  }
+
+  function _sendAppToTv() {
+    try {
+      if (window.webOS && window.webOS.platform && window.webOS.platform.tv && window.close) {
+        window.close();
+        return;
+      }
+      if (window.webOS && typeof window.webOS.platformBack === 'function') {
+        window.webOS.platformBack();
+      }
+    } catch (e) {
+      console.warn('[App] Unable to hand off to TV shell', e);
+    }
   }
 
   function showProfileCodeEntry(params) {
