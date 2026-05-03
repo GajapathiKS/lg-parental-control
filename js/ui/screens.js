@@ -271,12 +271,6 @@ var Screens = (function () {
       html += Components.renderProfileCard(p);
     });
 
-    // Add profile button
-    html += '<div class="profile-card focusable" tabindex="0" id="btn-add-profile" style="border: 2px dashed var(--border);">' +
-      '<div class="profile-avatar" style="font-size: 48px;">+</div>' +
-      '<div class="profile-name">Add Child</div>' +
-      '</div>';
-
     html += '</div>' +
       '<div class="row mission-actions">' +
         '<div class="spacer"></div>' +
@@ -294,14 +288,6 @@ var Screens = (function () {
         App.navigate('child-dashboard', { profileId: profileId });
       });
     });
-
-    // Add profile
-    var addBtn = document.getElementById('btn-add-profile');
-    if (addBtn) {
-      addBtn.addEventListener('click', function () {
-        App.navigate('create-profile');
-      });
-    }
 
     // Parent settings
     document.getElementById('btn-slideshow').addEventListener('click', function () {
