@@ -638,6 +638,7 @@ var Screens = (function () {
     var rules = profile.rules || [];
     var codeStatus = profile.launchCodeHash ? 'Configured' : 'Not set';
     var selectedAvatar = profile.avatar || 'bear';
+    var todayUsage = Storage.getTodayUsage(profileId).minutesUsed;
     var html = '<div class="screen parent-control-screen">' +
       '<div class="row">' +
         '<div><div class="mission-kicker red">Child mission control</div><div class="title">' + _escapeHtml(profile.name) + '</div></div>' +
@@ -656,11 +657,13 @@ var Screens = (function () {
         '</div>' +
         '<div class="card control-card">' +
           '<div class="label">Daily limit</div>' +
+          '<div style="color: var(--text-secondary); margin-bottom: 18px;">Used today: ' + todayUsage + ' min</div>' +
           '<div class="row">' +
             '<button class="btn focusable" tabindex="0" id="profile-limit-down">-</button>' +
             '<div id="profile-limit-val" class="control-value">' + profile.dailyLimitMinutes + ' min</div>' +
             '<button class="btn focusable" tabindex="0" id="profile-limit-up">+</button>' +
           '</div>' +
+          '<button class="btn btn-danger focusable" tabindex="0" id="btn-reset-today" style="margin-top: 18px; width: 100%;">Reset Today</button>' +
         '</div>' +
         '<div class="card control-card">' +
           '<div class="label">Kid profile password</div>' +
@@ -720,6 +723,7 @@ var Screens = (function () {
     });
     document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
     document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
+    document.getElementById('btn-reset-today').addEventListener('click', function () { _resetProfileToday(profileId); });
     document.getElementById('btn-generate-profile-code').addEventListener('click', async function () {
       var code = Pin.generateShareableCode();
       await Pin.setProfileCode(profileId, code);
@@ -774,6 +778,14 @@ var Screens = (function () {
         return;
       }
     }
+  }
+
+  function _resetProfileToday(profileId) {
+    if (Timer.getCurrentProfileId && Timer.getCurrentProfileId() === profileId) {
+      Timer.stop();
+    }
+    Storage.resetTodayUsage(profileId);
+    App.navigate('profile-controls', { profileId: profileId });
   }
 
   function _addBlockRule(profileId, name, start, end, days) {

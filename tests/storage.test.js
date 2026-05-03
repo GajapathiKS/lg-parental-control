@@ -81,6 +81,13 @@ var TestStorage = (function () {
     Storage.updateTodayUsage(p1.id, 45, { start: '09:00', end: '09:45' });
     assert(Storage.getTodayUsage(p1.id).sessions.length === 1, 'Session logged');
 
+    Storage.saveActiveSession({ profileId: p1.id, startTime: new Date().toISOString(), accumulatedMinutes: 45 });
+    Storage.resetTodayUsage(p1.id);
+    assert(Storage.getTodayUsage(p1.id).minutesUsed === 0, 'Today usage resets to 0');
+    assert(Storage.getTodayUsage(p1.id).sessions.length === 0, 'Today sessions are cleared');
+    assert(Storage.getActiveSession() === null, 'Active session clears when today usage resets');
+    Storage.updateTodayUsage(p1.id, 45);
+
     // --- Usage History ---
     var history = Storage.getUsageHistory(p1.id, 7);
     assert(history.length === 7, 'History returns 7 days');

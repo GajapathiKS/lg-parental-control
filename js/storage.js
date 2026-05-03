@@ -180,6 +180,19 @@ var Storage = (function () {
     saveUsageLog(log);
   }
 
+  function resetTodayUsage(profileId) {
+    var log = getUsageLog();
+    var today = getTodayKey();
+    if (!log[today]) log[today] = {};
+    log[today][profileId] = { minutesUsed: 0, sessions: [] };
+    saveUsageLog(log);
+
+    var activeSession = getActiveSession();
+    if (activeSession && activeSession.profileId === profileId) {
+      clearActiveSession();
+    }
+  }
+
   function getActiveSession() {
     return get(KEYS.ACTIVE_SESSION);
   }
@@ -310,6 +323,7 @@ var Storage = (function () {
     saveUsageLog: saveUsageLog,
     getTodayUsage: getTodayUsage,
     updateTodayUsage: updateTodayUsage,
+    resetTodayUsage: resetTodayUsage,
     getActiveSession: getActiveSession,
     saveActiveSession: saveActiveSession,
     clearActiveSession: clearActiveSession,
