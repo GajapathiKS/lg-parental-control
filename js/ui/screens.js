@@ -426,48 +426,42 @@ var Screens = (function () {
   }
 
   function _sendAppToTv() {
+    _launchSystemApp('com.webos.app.home');
+    setTimeout(function () { _launchSystemApp('com.webos.app.livetv'); }, 300);
+    setTimeout(_platformBack, 650);
+    setTimeout(_closeWindow, 950);
+  }
+
+  function _launchSystemApp(appId) {
     try {
       if (window.webOS && window.webOS.service && window.webOS.service.request) {
         window.webOS.service.request('luna://com.webos.applicationManager', {
           method: 'launch',
-          parameters: { id: 'com.webos.app.home' },
-          onSuccess: function () {},
-          onFailure: function () {
-            _launchLiveTvOrClose();
-          },
+          parameters: { id: appId },
+          onSuccess: function () { console.info('[App] Requested launch:', appId); },
+          onFailure: function (err) { console.warn('[App] Launch failed:', appId, err); },
         });
-        return;
       }
-      _launchLiveTvOrClose();
     } catch (e) {
-      console.warn('[App] Unable to hand off to TV shell', e);
-      _launchLiveTvOrClose();
+      console.warn('[App] Unable to launch system app:', appId, e);
     }
   }
 
-  function _launchLiveTvOrClose() {
+  function _platformBack() {
     try {
-      if (window.webOS && window.webOS.service && window.webOS.service.request) {
-        window.webOS.service.request('luna://com.webos.applicationManager', {
-          method: 'launch',
-          parameters: { id: 'com.webos.app.livetv' },
-          onSuccess: function () {},
-          onFailure: function () { _closeOrBack(); },
-        });
-        return;
+      if (window.webOS && typeof window.webOS.platformBack === 'function') {
+        window.webOS.platformBack();
       }
-      _closeOrBack();
     } catch (e) {
-      _closeOrBack();
+      console.warn('[App] platformBack failed', e);
     }
   }
 
-  function _closeOrBack() {
+  function _closeWindow() {
     try {
-      if (window.webOS && window.webOS.platform && window.webOS.platform.tv && window.close) window.close();
-      if (window.webOS && typeof window.webOS.platformBack === 'function') window.webOS.platformBack();
+      if (window.close) window.close();
     } catch (e) {
-      console.warn('[App] Unable to close or background app', e);
+      console.warn('[App] window.close failed', e);
     }
   }
 
