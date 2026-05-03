@@ -38,6 +38,27 @@ var Timer = (function () {
     _interval = setInterval(_tick, TICK_MS);
   }
 
+  function resumeStoredSession(profileId, callbacks) {
+    var session = Storage.getActiveSession();
+    if (!session || session.profileId !== profileId || !session.startTime) {
+      start(profileId, callbacks);
+      return;
+    }
+
+    if (_interval) clearInterval(_interval);
+    _profileId = profileId;
+    _lastProfileId = profileId;
+    _startTime = new Date(session.startTime);
+    if (isNaN(_startTime.getTime())) _startTime = new Date();
+    _onWarning = callbacks.onWarning || function () {};
+    _onLimitReached = callbacks.onLimitReached || function () {};
+    _onTick = callbacks.onTick || function () {};
+    _milestonesFired = session.milestonesFired || [];
+
+    _tick();
+    _interval = setInterval(_tick, TICK_MS);
+  }
+
   function reconcileStoredSession() {
     var session = Storage.getActiveSession();
     if (!session || !session.profileId || !session.startTime) return null;
@@ -201,6 +222,8 @@ var Timer = (function () {
     var usage = Storage.getTodayUsage(profileId);
     var remaining = profile.dailyLimitMinutes - usage.minutesUsed;
     var blockingRule = getBlockingRule(profileId, new Date());
+    var activeSession = Storage.getActiveSession();
+    var isStoredActive = !!(activeSession && activeSession.profileId === profileId);
 
     return {
       profileId: profileId,
@@ -210,7 +233,9 @@ var Timer = (function () {
       limitMinutes: profile.dailyLimitMinutes,
       percentage: Math.min(100, Math.round((usage.minutesUsed / profile.dailyLimitMinutes) * 100)),
       isLimitReached: remaining <= 0,
-      isActive: _profileId === profileId && _interval !== null,
+      isActive: (_profileId === profileId && _interval !== null) || isStoredActive,
+      isRunningInApp: _profileId === profileId && _interval !== null,
+      hasStoredSession: isStoredActive,
       blockingRule: blockingRule,
       isBlockedByRule: !!blockingRule,
     };
@@ -305,6 +330,7 @@ var Timer = (function () {
 
   return {
     start: start,
+    resumeStoredSession: resumeStoredSession,
     reconcileStoredSession: reconcileStoredSession,
     stop: stop,
     extendTime: extendTime,

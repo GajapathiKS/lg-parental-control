@@ -31,7 +31,23 @@ var Components = (function () {
     if (knownId === 'crew') {
       return '<span class="avatar-initials">' + _escapeHtml(_initials(fallbackName)) + '</span>';
     }
-    return '<span class="avatar-icon avatar-icon-' + knownId + '"></span>';
+    return '<span class="avatar-icon avatar-icon-' + knownId + '">' + _renderSpaceSvg(knownId) + '</span>';
+  }
+
+  function _renderSpaceSvg(id) {
+    var paths = {
+      bear: '<circle cx="32" cy="26" r="13"></circle><path d="M21 51c3-8 8-12 11-12s8 4 11 12"></path><path d="M23 26h18"></path><path d="M18 20l-7-5M46 20l7-5"></path>',
+      rocket: '<path d="M34 8c10 8 11 22 4 36l-13-13C28 20 31 12 34 8z"></path><path d="M25 31l-10 3 4-12"></path><path d="M38 44l-3 10 12-4"></path><circle cx="35" cy="22" r="4"></circle><path d="M22 42l-9 9"></path>',
+      star: '<path d="M32 7l7 17 18 2-14 11 4 18-15-10-15 10 4-18L7 26l18-2 7-17z"></path>',
+      dino: '<path d="M13 41h31c6 0 10-4 10-9v-4"></path><path d="M20 41v8M43 41v8"></path><circle cx="50" cy="22" r="5"></circle><path d="M45 27l-8 6M21 34l-8-8"></path><path d="M18 49h10M39 49h10"></path>',
+      rainbow: '<circle cx="32" cy="32" r="9"></circle><path d="M7 32c8-14 16-21 25-21s17 7 25 21"></path><path d="M13 39c6-10 12-15 19-15s13 5 19 15"></path><path d="M32 4v7M32 53v7M4 32h7M53 32h7"></path>',
+      robot: '<path d="M20 20h24v24H20z"></path><path d="M32 10v10M25 10h14"></path><circle cx="27" cy="30" r="2"></circle><circle cx="37" cy="30" r="2"></circle><path d="M27 38h10"></path><path d="M16 28h4M44 28h4"></path>',
+      cat: '<rect x="15" y="28" width="34" height="15" rx="3"></rect><path d="M12 43h40"></path><path d="M19 28l-6-10M45 28l6-10"></path><path d="M25 43l-5 9M39 43l5 9"></path><circle cx="53" cy="18" r="4"></circle>',
+      fish: '<path d="M10 37c14-15 29-15 44-3"></path><path d="M10 37c13 3 25 8 37 17"></path><circle cx="47" cy="23" r="5"></circle><path d="M18 35l-9-9M25 31l-8-14"></path>',
+    };
+    return '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' +
+      (paths[id] || paths.rocket) +
+      '</svg>';
   }
 
   function renderNumpad(keys) {

@@ -830,6 +830,31 @@ html.viewport-scaled .modal-overlay {
   grid-column: 1 / -1;
 }
 
+.identity-row {
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.compact-avatar-grid .avatar-grid {
+  grid-template-columns: repeat(8, 1fr);
+  gap: 14px;
+  margin: 16px 0 0;
+}
+
+.compact-avatar-grid .avatar-option {
+  width: 96px;
+  height: 96px;
+}
+
+.compact-avatar-grid .avatar-option .avatar-icon {
+  transform: scale(0.78);
+}
+
+.compact-avatar-grid .avatar-option small {
+  display: none;
+}
+
 .control-value {
   min-width: 180px;
   text-align: center;

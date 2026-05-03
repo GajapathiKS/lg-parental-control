@@ -348,7 +348,7 @@ var Screens = (function () {
               ? '<div style="color: var(--danger); font-size: 32px; font-weight: 600;">Time\'s up for today!</div>'
               : '<div class="row">' +
                   '<button class="btn btn-primary btn-large focusable" tabindex="0" id="btn-start-watching">' +
-                    (status.isActive ? 'Watching...' : 'Start Watching') + '</button>' +
+                    (status.isRunningInApp ? 'Watching...' : (status.hasStoredSession ? 'Continue Watching' : 'Start Watching')) + '</button>' +
                   (status.isActive ? '<button class="btn btn-large focusable" tabindex="0" id="btn-stop-watching">Stop Watching</button>' : '') +
                 '</div>'
             ) +
@@ -360,7 +360,11 @@ var Screens = (function () {
     var startBtn = document.getElementById('btn-start-watching');
     if (startBtn) {
       startBtn.addEventListener('click', function () {
-        if (!Timer.isRunning()) {
+        if (Timer.isRunning()) {
+          _sendAppToTv();
+        } else if (status.hasStoredSession) {
+          _resumeWatching(params.profileId);
+        } else {
           if (profile.launchCodeHash) {
             App.navigate('profile-code-entry', { profileId: params.profileId });
           } else {
@@ -393,7 +397,19 @@ var Screens = (function () {
   }
 
   function _startWatching(profileId) {
-    Timer.start(profileId, {
+    Timer.start(profileId, _watchCallbacks());
+    App.navigate('child-dashboard', { profileId: profileId });
+    setTimeout(_sendAppToTv, 700);
+  }
+
+  function _resumeWatching(profileId) {
+    Timer.resumeStoredSession(profileId, _watchCallbacks());
+    App.navigate('child-dashboard', { profileId: profileId });
+    setTimeout(_sendAppToTv, 700);
+  }
+
+  function _watchCallbacks() {
+    return {
       onTick: function (state) {
         var timeEl = document.getElementById('time-remaining');
         if (timeEl) {
@@ -406,22 +422,52 @@ var Screens = (function () {
       onLimitReached: function (data) {
         Lockscreen.showLockscreen(data.profileName);
       },
-    });
-    App.navigate('child-dashboard', { profileId: profileId });
-    setTimeout(_sendAppToTv, 700);
+    };
   }
 
   function _sendAppToTv() {
     try {
-      if (window.webOS && window.webOS.platform && window.webOS.platform.tv && window.close) {
-        window.close();
+      if (window.webOS && window.webOS.service && window.webOS.service.request) {
+        window.webOS.service.request('luna://com.webos.applicationManager', {
+          method: 'launch',
+          parameters: { id: 'com.webos.app.home' },
+          onSuccess: function () {},
+          onFailure: function () {
+            _launchLiveTvOrClose();
+          },
+        });
         return;
       }
-      if (window.webOS && typeof window.webOS.platformBack === 'function') {
-        window.webOS.platformBack();
-      }
+      _launchLiveTvOrClose();
     } catch (e) {
       console.warn('[App] Unable to hand off to TV shell', e);
+      _launchLiveTvOrClose();
+    }
+  }
+
+  function _launchLiveTvOrClose() {
+    try {
+      if (window.webOS && window.webOS.service && window.webOS.service.request) {
+        window.webOS.service.request('luna://com.webos.applicationManager', {
+          method: 'launch',
+          parameters: { id: 'com.webos.app.livetv' },
+          onSuccess: function () {},
+          onFailure: function () { _closeOrBack(); },
+        });
+        return;
+      }
+      _closeOrBack();
+    } catch (e) {
+      _closeOrBack();
+    }
+  }
+
+  function _closeOrBack() {
+    try {
+      if (window.webOS && window.webOS.platform && window.webOS.platform.tv && window.close) window.close();
+      if (window.webOS && typeof window.webOS.platformBack === 'function') window.webOS.platformBack();
+    } catch (e) {
+      console.warn('[App] Unable to close or background app', e);
     }
   }
 
@@ -597,6 +643,7 @@ var Screens = (function () {
 
     var rules = profile.rules || [];
     var codeStatus = profile.launchCodeHash ? 'Configured' : 'Not set';
+    var selectedAvatar = profile.avatar || 'bear';
     var html = '<div class="screen parent-control-screen">' +
       '<div class="row">' +
         '<div><div class="mission-kicker red">Child mission control</div><div class="title">' + _escapeHtml(profile.name) + '</div></div>' +
@@ -604,6 +651,15 @@ var Screens = (function () {
         '<button class="btn focusable" tabindex="0" id="btn-back-parent">Back</button>' +
       '</div>' +
       '<div class="parent-control-grid">' +
+        '<div class="card control-card wide identity-card">' +
+          '<div class="label">Profile identity</div>' +
+          '<div class="row identity-row">' +
+            '<div class="profile-avatar avatar-' + _escapeHtml(selectedAvatar) + '" id="identity-preview">' + Components.renderAvatarIcon(selectedAvatar, profile.name) + '</div>' +
+            '<input class="focusable control-input" tabindex="0" id="profile-name-input" value="' + _escapeHtml(profile.name) + '" maxlength="20">' +
+            '<button class="btn btn-primary focusable" tabindex="0" id="btn-save-identity">Save Identity</button>' +
+          '</div>' +
+          '<div id="profile-avatar-grid" class="compact-avatar-grid">' + Components.renderAvatarGrid(selectedAvatar) + '</div>' +
+        '</div>' +
         '<div class="card control-card">' +
           '<div class="label">Daily limit</div>' +
           '<div class="row">' +
@@ -651,6 +707,23 @@ var Screens = (function () {
     _render(html);
 
     document.getElementById('btn-back-parent').addEventListener('click', function () { App.navigate('parent-dashboard'); });
+    document.getElementById('profile-avatar-grid').addEventListener('click', function (event) {
+      var button = event.target.closest('.avatar-option');
+      if (!button) return;
+      selectedAvatar = button.getAttribute('data-avatar');
+      document.getElementById('profile-avatar-grid').innerHTML = Components.renderAvatarGrid(selectedAvatar);
+      var preview = document.getElementById('identity-preview');
+      preview.className = 'profile-avatar avatar-' + selectedAvatar;
+      preview.innerHTML = Components.renderAvatarIcon(selectedAvatar, document.getElementById('profile-name-input').value.trim());
+    });
+    document.getElementById('btn-save-identity').addEventListener('click', function () {
+      var newName = document.getElementById('profile-name-input').value.trim();
+      if (!newName) {
+        document.getElementById('profile-name-input').style.borderColor = 'var(--danger)';
+        return;
+      }
+      _updateProfileIdentity(profileId, newName, selectedAvatar);
+    });
     document.getElementById('profile-limit-down').addEventListener('click', function () { _updateProfileLimit(profileId, -15); });
     document.getElementById('profile-limit-up').addEventListener('click', function () { _updateProfileLimit(profileId, 15); });
     document.getElementById('btn-generate-profile-code').addEventListener('click', async function () {
@@ -689,6 +762,19 @@ var Screens = (function () {
     for (var i = 0; i < profiles.length; i++) {
       if (profiles[i].id === profileId) {
         profiles[i].dailyLimitMinutes = Math.max(15, Math.min(480, profiles[i].dailyLimitMinutes + delta));
+        Storage.saveProfiles(profiles);
+        App.navigate('profile-controls', { profileId: profileId });
+        return;
+      }
+    }
+  }
+
+  function _updateProfileIdentity(profileId, name, avatar) {
+    var profiles = Storage.getProfiles();
+    for (var i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profileId) {
+        profiles[i].name = name;
+        profiles[i].avatar = avatar;
         Storage.saveProfiles(profiles);
         App.navigate('profile-controls', { profileId: profileId });
         return;
