@@ -35,7 +35,7 @@ var Screens = (function () {
       '</div>'
     );
     document.getElementById('btn-start-setup').addEventListener('click', function () {
-      App.navigate('setup-pin');
+      App.navigate('pin-entry', { next: 'parent-dashboard' });
     });
     document.getElementById('btn-preview-lock').addEventListener('click', function () {
       Lockscreen.showLockscreen('Preview');
@@ -515,7 +515,8 @@ var Screens = (function () {
         '<button class="icon-nav icon-nav-right focusable" tabindex="0" id="btn-pin-home" aria-label="Home"><span class="icon-home"></span></button>' +
         '<div class="col" style="align-items: center;">' +
           '<div class="lock-icon" aria-hidden="true"></div>' +
-          '<div class="title">Enter Parent PIN</div>' +
+          '<div class="title">Enter Parent Code</div>' +
+          '<div class="subtitle" style="text-align: center;">Use the daily admin code, one-time code, or optional parent PIN.</div>' +
           '<div id="pin-dots">' + Components.renderPinDots(6, 0) + '</div>' +
           '<div id="pin-error" style="color: var(--danger); height: 32px;"></div>' +
           Components.renderNumpad(Components.getRandomizedNumpadKeys()) +
@@ -545,6 +546,9 @@ var Screens = (function () {
           valid = await Pin.verifyOneTimeCode(pin);
         }
         if (valid) {
+          if (!Storage.isSetupComplete()) {
+            Storage.markSetupComplete();
+          }
           App.navigate(params.next || 'parent-dashboard', params.nextParams || {});
         } else {
           document.getElementById('pin-error').textContent = 'Wrong PIN. Try again.';
