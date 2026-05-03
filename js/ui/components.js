@@ -4,14 +4,14 @@
 var Components = (function () {
 
   var AVATARS = [
-    { id: 'bear', label: 'Bear', name: 'Bear' },
+    { id: 'bear', label: 'Astronaut', name: 'Astronaut' },
     { id: 'rocket', label: 'Rocket', name: 'Rocket' },
     { id: 'star', label: 'Star', name: 'Star' },
-    { id: 'dino', label: 'Dino', name: 'Dino' },
-    { id: 'rainbow', label: 'Rainbow', name: 'Rainbow' },
-    { id: 'robot', label: 'Robot', name: 'Robot' },
-    { id: 'cat', label: 'Cat', name: 'Cat' },
-    { id: 'fish', label: 'Fish', name: 'Fish' },
+    { id: 'dino', label: 'Rover', name: 'Rover' },
+    { id: 'rainbow', label: 'Orbit', name: 'Orbit' },
+    { id: 'robot', label: 'Probe', name: 'Probe' },
+    { id: 'cat', label: 'Satellite', name: 'Satellite' },
+    { id: 'fish', label: 'Comet', name: 'Comet' },
   ];
 
   function getAvatarEmoji(id, fallbackName) {
